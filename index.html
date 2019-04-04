@@ -83,7 +83,7 @@
             for (var u in data) {
                 var d = new Date(data[u].time);
                 var t = d.toString();
-                mylist = mylist + "<li>" + data[u].tweet + " (" + t + ")</li>";
+                mylist = mylist + "<li>" + data[u].tweet + " (" + t + ") " + "(" + name + ")</li>";
             }
             mylist = mylist + "</ul>";
             console.log(mylist);
@@ -116,13 +116,21 @@
         
         /*function chgUName() {
             
-            //var data = ;
+            alert("uName chg started");
+            
             newUName = document.getElementById("uNameChg").value;
-            delete data.users[userId].username;
-            data.users[userId].push({username: newUName});
+            
+            firebase.database().ref('users/' + userId).set({
+                username: newUName
+            });
+            
+            alert("Your new username: " + newUName);
+            
             newUName = "";
             console.log("uName changed");
             
+            alert("done");
+                
         }*/
         
         
@@ -151,7 +159,7 @@
         Change your Username:<br>
         <textarea id="uNameChg" type="text" name="newUName" cols="100" rows="4"></textarea>
         </form>
-        <button type="button" onclick="chgUName()">Submit</button>
+        <button type="button" onclick="writeUserData(userId, document.getElementbyId('uNameChg').value, email, imageUrl)">Submit</button>
             
         <br>
         

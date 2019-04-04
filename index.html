@@ -92,6 +92,17 @@
         }
         
         // write tweets to firebase
+        function tweetCheck() {
+            
+            var nameValue = document.getElementById("twit").value;
+                        
+            if (nameValue.length < 1 || nameValue.length > 140) {
+                alert("Your tweet must be from 1 to 140 chracters.");
+            } else {
+                tweet();
+            }
+        }
+        
         function tweet() {
             
             twitdoc = document.getElementById("twit");
@@ -167,7 +178,7 @@
             Tweet:<br>
             <textarea id="twit" type="text" name="thetweet" cols="100" rows="4"></textarea>
         </form> 
-        <button type="button" onclick="tweet()">Submit</button>
+        <button type="button" onclick="tweetCheck()">Submit</button>
     
     <div id="mytweets"></div>
     <div id="mydata"></div>

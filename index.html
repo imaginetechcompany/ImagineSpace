@@ -11,6 +11,7 @@
     <script src="https://www.gstatic.com/firebasejs/5.8.5/firebase.js"></script>
     
     <script>
+                
         // Initialize Firebase
         var config = {
         apiKey: "AIzaSyAMXtT9JDwMNyxZabBYoRi0041-Rf1vDnY",
@@ -72,6 +73,9 @@
         function writeUserData(userId, name, email, imageUrl) {
             firebase.database().ref('users/' + userId).set({
                 username: name,
+                if (!uDispName.equals(null)) {
+                    username: uDispName;
+                }
                 email: email,
                 profile_picture : imageUrl
             });
@@ -125,24 +129,14 @@
             
         }
         
-        /*function chgUName() {
+        function chgUName() {
             
-            alert("uName chg started");
-            
-            newUName = document.getElementById("uNameChg").value;
-            
-            firebase.database().ref('users/' + userId).set({
-                username: newUName
+             firebase.database().ref('users/' + userId).set({
+                uDispName = document.getElementById("uNameChg").value;
+                document.getElementById("uNameChg").value = "";
             });
-            
-            alert("Your new username: " + newUName);
-            
-            newUName = "";
-            console.log("uName changed");
-            
-            alert("done");
                 
-        }*/
+        }
         
         
         function signin() {
@@ -170,7 +164,7 @@
         Change your Username:<br>
         <textarea id="uNameChg" type="text" name="newUName" cols="100" rows="4"></textarea>
         </form>
-        <button type="button" onclick="writeUserData(userId, document.getElementbyId('uNameChg').value, email, imageUrl)">Submit</button>
+        <button type="button" onclick="chgUName()">Submit</button>
             
         <br>
         

@@ -92,11 +92,6 @@
         var newVidFile = "";
         //var loadTime = new Date();
         var loadDate = new Date().toString();
-        var scrWidth = 777;
-        
-        if ( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
-            scrWidth = 300;
-        }
         
         
         // Initialize Firebase
@@ -180,7 +175,7 @@
         
         function updatetweets(data) {
             //var mylist = "<ul>";
-            var mytab = "<table width=scrWidth>";
+            var mytab = "<table width=785px>";
             users = data[1]; // put on top, because changed data - not good coding change later
             data = data[0];
             
@@ -369,7 +364,7 @@
         <br><input id="vidFileID" type="text"/>
         <div id="vidTest" style="display:none;"></div>
         <br>
-        *Youtube videos only: click share, embed, then copy & paste only the 'http...' part of the embed code*
+        *Click share on a video, then embed, then copy & paste only the 'http...' part of the <b>embed code</b>*
         
     <br> <br> <hr> <br>
         

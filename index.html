@@ -70,11 +70,26 @@
     .dropdown-content {
   right: 0;
 }
+     
+.loader {
+  border: 16px solid white; /* Light grey */
+  border-top: 16px solid hotpink; /* Blue */
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
         
 </style>
     
     <script>
         
+        var newVidFile = "";
         //var loadTime = new Date();
         var loadDate = new Date().toString();
         
@@ -211,16 +226,31 @@
                         }
                         mytab = mytab + "<td> <img src='" + data[u][t].img + "' width='250px'>" + "<center>" + data[u][t].tweet + "</center>"  + "</td>";
                         mytab = mytab + "<td width='50px'>" + time + "</td>";
+                    } else if (data[u][t].vid != null && data[u][t].vid != "") {
+                        if (users[u].profile_picture2 == null) {
+                            mytab = mytab + "<td><img src='" + users[u].profile_picture + "' width='70px'></td>";
+                        } else {
+                            mytab = mytab + "<td><img src='" + users[u].profile_picture2 + "' width='70px'></td>";
+                        }
+                        if (users[u].username2 == null) {
+                            mytab = mytab + "<td>" + users[u].username + "</td>";
+                        } else {
+                            mytab = mytab + "<td>" + users[u].username2 + "</td>";
+                        }
+                        mytab = mytab + "<td width='1px'> <center> <iframe width='250' src='" + data[u][t].vid + "'frameborder='0' allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture' allowfullscreen></iframe> <br>" + data[u][t].tweet + "</center>"  + "</td>";
+                        mytab = mytab + "<td width='50px'>" + time + "</td>";
                     } else {
                         if (users[u].profile_picture2 == null) {
                             mytab = mytab + "<td><img src='" + users[u].profile_picture + "' width='70px'></td>";
                         } else {
                             mytab = mytab + "<td><img src='" + users[u].profile_picture2 + "' width='70px'></td>";
-                        }                        if (users[u].username2 == null) {
+                        }
+                        if (users[u].username2 == null) {
                             mytab = mytab + "<td>" + users[u].username + "</td>";
                         } else {
                             mytab = mytab + "<td>" + users[u].username2 + "</td>";
-                        }                        mytab = mytab + "<td>" + data[u][t].tweet + "</td>";
+                        }
+                        mytab = mytab + "<td width='1px'>" + data[u][t].tweet + "</td>";
                         mytab = mytab + "<td width='50px'>" + time + "</td>";
                         
                         
@@ -241,10 +271,21 @@
             loadDate = new Date().toString();
             var twitdoc = document.getElementById("twit");
             var twitimg = document.getElementById("imgTest");
+            var twitvid = document.getElementById("vidFileID");
             var nameValue = twitdoc.value;
             var imgValue = twitimg.innerHTML;
+            var vidValue = twitvid.value;
             var js_time = Date.now();
-            var tweetid = firebase.database().ref('tweets/' + userId + "/").push({tweet: nameValue, time: js_time, img: imgValue});
+            
+            if (nameValue.length > 140) {
+                alert("You cannot post more than 140 characters");
+            } else if (nameValue.length == 0 && imgValue == "" && vidValue == "") {
+                alert("You must post at least one of the following: text, image, video");
+            } else if (imgValue != "" && vidValue != "") {
+                alert("You can only post one of the following: image, video");
+            } else {
+            
+            var tweetid = firebase.database().ref('tweets/' + userId + "/").push({tweet: nameValue, time: js_time, img: imgValue, vid: vidValue});
             twitdoc.value = "";
             console.log("tweet written")
             
@@ -264,7 +305,7 @@
                     }
                 });
             
-            
+            }
             
             // The unique key stored in tweetid is based on a timestamp, so list items will automatically be ordered chronologically. Because Firebase generates a unique key for each tweet, no write conflicts will occur if multiple users add a post at the same time. https://firebase.google.com/docs/database/admin/save-data
             
@@ -297,7 +338,8 @@
     <a href="help.html">Help & FAQ</a>
   </div>
 </div>
-        <br> <br>
+        
+        <br>
         
         <button onclick="signin()">Sign in</button>
         <button onclick="signout()">Sign out</button>
@@ -310,10 +352,29 @@
         </form> 
         <button type="button" onclick="tweet()">Submit</button>
     
+        <br><br>
+        
+        Image:
         <br><input id="inputFileToLoad" type="file" onchange="encodeImageFileAsURL();" />
         <div id="imgTest" style="display:none;"></div>
         
-    <div id="mytweets"></div>
+        <br><br>
+        
+        Video:
+        <br><input id="vidFileID" type="text"/>
+        <div id="vidTest" style="display:none;"></div>
+        <br>
+        *Youtube videos only: click share, embed, then copy & paste only the 'http...' part of the embed code*
+        
+    <br> <br> <hr> <br>
+        
+    <div id="mytweets">
+    <center><div class="loader"></div> <br>
+    <h3>Loading...</h3></center>
+    </div>
+        
+    <br> <hr> <br>
+        
     <center><div id="mydata"></div>
     <div id="myphoto"></div></center>
         

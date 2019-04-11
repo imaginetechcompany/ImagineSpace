@@ -73,13 +73,11 @@
         
 </style>
     
-    
-    
     <script>
         
+        var userId = "";
         //var loadTime = new Date();
         var loadDate = new Date().toString();
-        var userId = "";
         
         // Initialize Firebase
         var config = {
@@ -160,6 +158,13 @@
             });
             alert("Congrats on your new Profile Pic! It might take a bit of time to appear on your feed.");
         }
+        function chgBio() {
+            var newBio = document.getElementById("newBio").value;
+            firebase.database().ref('users/' + userId).update({
+                bio: newBio
+            });
+            alert("Congrats on your new Bio!");
+        }
         
     </script>
     
@@ -191,6 +196,9 @@
         <p>New Profile Pic:</p>
         <input id="inputFileToLoad" type="file" onchange="encodeImageFileAsURL();" /> <button onclick="chgPic()">Submit</button>
         <div id="imgTest" style="display:none;"></div>
+        <br><br>
+        <p>New Bio:</p>
+        <textarea id="newBio"></textarea> <button onclick="chgBio()">Submit</button>
         <br><br>
         <hr>
         

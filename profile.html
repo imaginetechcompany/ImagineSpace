@@ -129,7 +129,7 @@
             firebase.database().ref('users/' + userId).update({
                 username2: newName
             });
-            alert("Congrats on your new Profile Pic!");
+            alert("Congrats on your new Username!");
         }
         
         function encodeImageFileAsURL() {
@@ -165,8 +165,13 @@
             });
             alert("Congrats on your new Bio!");
         }
-        
-        if ()
+        function follow() {
+            var newName = document.getElementById("following").value;
+            firebase.database().ref('users/' + userId + '/following').update({
+                user: newName
+            });
+            alert("You are now following " + newName);
+        }
         
     </script>
     
@@ -194,6 +199,10 @@
         <p>New Userame:</p>
         <input type="text" id="uName">
         <button onclick="uNameChg()">Submit</button>
+        <br><br>
+        <p>Follow:</p>
+        <input type="text" id="following">
+        <button onclick="follow()">Submit</button>
         <br><br>
         <p>New Profile Pic:</p>
         <input id="inputFileToLoad" type="file" onchange="encodeImageFileAsURL();" /> <button onclick="chgPic()">Submit</button>

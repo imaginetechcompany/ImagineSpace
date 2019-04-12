@@ -8,6 +8,13 @@
     
     </head>
     
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+    (adsbygoogle = window.adsbygoogle || []).push({
+    google_ad_client: "ca-pub-3125545933480592",
+    enable_page_level_ads: true
+    });
+    </script>
     <script src="https://www.gstatic.com/firebasejs/5.8.5/firebase.js"></script>
     <script src="https://apis.google.com/js/platform.js" async defer></script>
     
@@ -180,6 +187,7 @@
             data = data[0];
             
             for (var u in data) {
+                
                 for (var t in data[u]) {
                     mytab = mytab + "<tr>";
                     var date = new Date(data[u][t].time);
@@ -252,9 +260,10 @@
                         }
                         mytab = mytab + "<td width='1px'>" + data[u][t].tweet + "</td>";
                         mytab = mytab + "<td width='50px'>" + time + "</td>";
-                        
-                        
-                    } 
+                         
+                    
+                    }
+                    
                     mytab = mytab + "</tr>";
                 }   
             }

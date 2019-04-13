@@ -1,0 +1,115 @@
+<html>
+ 
+<script src="https://www.gstatic.com/firebasejs/5.8.5/firebase.js"></script>
+<script src="https://apis.google.com/js/platform.js" async defer></script>
+    
+    <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ImagineSpace</title>
+    <link href="main2.css" rel="stylesheet" type="text/css" />
+    </head>
+    
+<script>
+   
+    var admin = false;
+    
+var config = {
+        apiKey: "AIzaSyAMXtT9JDwMNyxZabBYoRi0041-Rf1vDnY",
+        authDomain: "test-b8fc5.firebaseapp.com",
+        databaseURL: "https://test-b8fc5.firebaseio.com",
+        projectId: "test-b8fc5",
+        storageBucket: "test-b8fc5.appspot.com",
+        messagingSenderId: "6609833657"
+        };
+        
+    firebase.initializeApp(config);
+                
+        firebase.auth().onAuthStateChanged(function(user) {
+            
+            if (user == null) {
+                alert("Not logged in.");
+                return;
+            } else {
+                userId = user.uid;
+                name = user.displayName;
+                imageUrl = user.photoURL;
+                email = user.email;
+                
+                if (email != "adam.manji@ucc.on.ca" && email != "jinoo.kim@ucc.on.ca") {
+                    alert("Not an admin");
+                } else {
+                    admin = true;
+                }
+                
+                // write data to document
+                mydiv = document.getElementById("mydata");
+                mydiv.innerHTML = name
+                myphotodiv = document.getElementById("myphoto");
+                myphotodiv.innerHTML = "<img src='" + imageUrl + "'/>";
+                
+            }
+            
+        });
+    
+    
+function newPoll() {
+    
+    if (admin) {
+    
+    var img = document.getElementById("imgArea").value;
+    var pollNum = document.getElementById("numArea").value;
+    var cap = document.getElementById("capArea").value;
+    
+    firebase.database().ref('polls/' + pollNum).update({
+        img: img,
+        caption: cap,
+        likes: 0,
+        dislikes: 0,
+        pollNumber: pollNum
+    });
+    
+    alert("Submitted");
+        
+    } else {
+        alert("Not an admin");
+    }
+}
+    
+function signin() {
+            console.log("Signing in");
+            var provider = new firebase.auth.GoogleAuthProvider();
+            firebase.auth().signInWithRedirect(provider).then(function(result) { 
+                window.location.replace("fbtest.html");
+            });
+        }
+        
+        function signout() {
+            console.log("Signing out");
+            firebase.auth().signOut().then(function() {
+            });
+        }
+    
+</script>
+ 
+<center>
+    
+<button onclick="signin()">Sign in</button>
+<button onclick="signout()">Sign out</button>
+    
+<p>Poll Number: </p>
+<input type="text" id="numArea"> <br>
+<p>Caption: </p>
+<textarea id="capArea"></textarea> <br>
+<p>Image URL: </p>
+<textarea id="imgArea"></textarea>
+<br> <br>
+<button onclick="newPoll()">Submit</button>
+       
+<br> <br> <hr> <br>
+    
+<center><div id="mydata"></div>
+<div id="myphoto"></div></center>
+   
+</center>
+    
+</html>

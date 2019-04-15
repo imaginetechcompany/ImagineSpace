@@ -87,6 +87,17 @@
         
 </style>
     
+<style>
+
+    .zoom {
+  transition: transform .25s; /* Animation */
+}
+    
+.zoom:hover {
+  transform: scale(2.3); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+}
+</style>
+    
     <script>
         
         var newVidFile = "";
@@ -175,7 +186,7 @@
         
         function updatetweets(data) {
             //var mylist = "<ul>";
-            var mytab = "<table width=785px>";
+            var mytab = "<center><table width=799px>";
             users = data[1]; // put on top, because changed data - not good coding change later
             data = data[0];
             
@@ -215,48 +226,56 @@
                     }
                     if (data[u][t].img != null && data[u][t].img != "") {
                         if (users[u].profile_picture2 == null) {
-                            mytab = mytab + "<td><img src='" + users[u].profile_picture + "' width='70px'></td>";
+                            mytab = mytab + "<td><img class = 'zoom' src='" + users[u].profile_picture + "' width='70px'></td>";
                         } else {
-                            mytab = mytab + "<td><img src='" + users[u].profile_picture2 + "' width='70px'></td>";
+                            mytab = mytab + "<td><img class = 'zoom' src='" + users[u].profile_picture2 + "' width='70px'></td>";
                         }
+                        mytab = mytab + "<td></td>";
                         if (users[u].username2 == null) {
-                            mytab = mytab + "<td>" + users[u].username + "</td>";
+                            mytab = mytab + "<td> <center>" + users[u].username + "</center> </td>";
                         } else {
-                            mytab = mytab + "<td>" + users[u].username2 + "</td>";
+                            mytab = mytab + "<td> <center>" + users[u].username2 + "</center> </td>";
                         }
-                        mytab = mytab + "<td> <img src='" + data[u][t].img + "' width='250px'>" + "<center>" + data[u][t].tweet + "</center>"  + "</td>";
+                        mytab = mytab + "<td></td>";
+                        mytab = mytab + "<td> <img class = 'zoom' src='" + data[u][t].img + "' width='250px'>" + "<center>" + data[u][t].tweet + "</center>"  + "</td>";
+                        mytab = mytab + "<td></td>";
                         mytab = mytab + "<td width='50px'>" + time + "</td>";
                     } else if (data[u][t].vid != null && data[u][t].vid != "") {
                         if (users[u].profile_picture2 == null) {
-                            mytab = mytab + "<td><img src='" + users[u].profile_picture + "' width='70px'></td>";
+                            mytab = mytab + "<td><img class = 'zoom' src='" + users[u].profile_picture + "' width='70px'></td>";
                         } else {
-                            mytab = mytab + "<td><img src='" + users[u].profile_picture2 + "' width='70px'></td>";
+                            mytab = mytab + "<td><img class = 'zoom' src='" + users[u].profile_picture2 + "' width='70px'></td>";
                         }
+                        mytab = mytab + "<td></td>";
                         if (users[u].username2 == null) {
-                            mytab = mytab + "<td>" + users[u].username + "</td>";
+                            mytab = mytab + "<td> <center>" + users[u].username + "</center> </td>";
                         } else {
-                            mytab = mytab + "<td>" + users[u].username2 + "</td>";
+                            mytab = mytab + "<td> <center>" + users[u].username2 + "</center> </td>";
                         }
+                        mytab = mytab + "<td></td>";
                         mytab = mytab + "<td width='1px'> <center> <iframe width='250' src='" + data[u][t].vid + "'frameborder='0' allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture' allowfullscreen></iframe> <br>" + data[u][t].tweet + "</center>"  + "</td>";
+                        mytab = mytab + "<td></td>";
                         mytab = mytab + "<td width='50px'>" + time + "</td>";
                     } else {
                         if (users[u].profile_picture2 == null) {
-                            mytab = mytab + "<td><img src='" + users[u].profile_picture + "' width='70px'></td>";
+                            mytab = mytab + "<td><img class = 'zoom' src='" + users[u].profile_picture + "' width='70px'></td>";
                         } else {
-                            mytab = mytab + "<td><img src='" + users[u].profile_picture2 + "' width='70px'></td>";
+                            mytab = mytab + "<td><img class = 'zoom' src='" + users[u].profile_picture2 + "' width='70px'></td>";
                         }
+                        mytab = mytab + "<td></td>";
                         if (users[u].username2 == null) {
-                            mytab = mytab + "<td>" + users[u].username + "</td>";
+                            mytab = mytab + "<td> <center>" + users[u].username + "</center> </td>";
                         } else {
-                            mytab = mytab + "<td>" + users[u].username2 + "</td>";
+                            mytab = mytab + "<td> <center>" + users[u].username2 + "</center> </td>";
                         }
+                        mytab = mytab + "<td></td>";
                         mytab = mytab + "<td width='1px'>" + data[u][t].tweet + "</td>";
+                        mytab = mytab + "<td></td>";
                         mytab = mytab + "<td width='50px'>" + time + "</td>";
-                         
-                    
+                                            
                     }
                     
-                    mytab = mytab + "</tr>";
+                    mytab = mytab + "</tr> </center>";
                 }   
             }
             //mylist = mylist + "</ul>";

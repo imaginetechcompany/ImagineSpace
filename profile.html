@@ -70,7 +70,21 @@
     .dropdown-content {
   right: 0;
 }
-        
+      
+.loader {
+  border: 16px solid white; /* Light grey */
+  border-top: 16px solid hotpink; /* Blue */
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+       
 </style>
     
     <script>
@@ -100,7 +114,7 @@
                 imageUrl = user.photoURL;
                 email = user.email;
                 
-                document.getElementById("YourProfile").innerHTML = "Your Name: " + name + " <br> Your Email Address: " + email;
+                updateInfo();
                 
                 // write data to document
                 mydiv = document.getElementById("mydata");
@@ -165,12 +179,47 @@
             });
             alert("Congrats on your new Bio!");
         }
-        function follow() {
+        /*function follow() {
             var newName = document.getElementById("following").value;
             firebase.database().ref('users/' + userId + '/following').update({
                 user: newName
             });
             alert("You are now following " + newName);
+        }*/
+        
+        function updateInfo() {
+                        
+            var infoUname = "";
+            var infoPic = "";
+            var infoBio = "";
+            
+            firebase.database().ref('/users').once('value').then(function(snapshot) { 
+                var userdata = (snapshot.val());
+                    dataarray = [userdata]
+                    console.log(dataarray);
+                users = dataarray[0];
+                
+                    for (var u in users) {
+                        if (users[u].username == name) {
+                            if (users[u].username2 != null) {
+                                infoUname = users[u].username2;
+                            } else {
+                                infoUname = users[u].username;
+                            }
+                            if (users[u].bio != null) {
+                                infoBio = users[u].bio;
+                            }
+                            if (users[u].profile_picture2 != null) {
+                                infoPic = users[u].profile_picture2;
+                            } else {
+                                infoPic = users[u].profile_picture;
+                            }
+                            document.getElementById("YourProfile").innerHTML = "<center><h4>Username:</h4>" + infoUname + " <br><br> <h4>Bio: </h4>" + infoBio + " <br><br> <h4>Profile Pic: </h4><img src = '" + infoPic + "' width = 444px></center>";
+                        }
+                    }
+                
+                
+            });
         }
         
     </script>
@@ -215,7 +264,8 @@
         <hr>
         
         <h2>Your profile:</h2>
-        <div id="YourProfile"></div>
+        <div id="YourProfile"><center><div class='loader'></div> <br>
+        <h3>Loading...</h3></center></div>
         
         <br> <hr> <br>
 

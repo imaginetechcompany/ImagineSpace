@@ -240,8 +240,6 @@
             var today = new Date().toString();
             today = today.substring(4,15);
             
-            alert(today);
-            
             firebase.database().ref('/polls/days').once('value').then(function(snapshot) { 
             var userdata = (snapshot.val());
             dataarray = [userdata]
@@ -254,7 +252,6 @@
                             for (var u in polls[d]) {
                                 if (polls[d][u].name == name) {
                                     voteAllowed = false;
-                                    alert("You have already voted today.");
                                 }
                             }
                             if (voteAllowed) {
@@ -267,10 +264,17 @@
                             firebase.database().ref('polls/days/' + today).push({
                             name
                         });  
+                        firebase.database().ref('polls/days/' + today).update({
+                            date: today
+                        });
                     }
                         
             }
                     
+                if (!voteAllowed) {
+                    alert("You have already voted today.");
+                }
+                
                 submitPoll();
                 
             });

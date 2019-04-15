@@ -29,14 +29,16 @@
     <br> <br>
     
     <h2>Vote</h2>
+    <h3>*You can only vote once per day*</h3>
     <div id="numInput">Poll number: <input type="number" value='1' id="pollNum" min=1 max=1></div>
     <input type=radio name="vote" value="Like" checked> Like <input id="DL" type=radio name="vote" value="Dislike"> Dislike <br>
-    <button onclick="submitPoll()">Submit</button> <button onclick='reLoad()' style="float: right;">Reload page</button>
+    <button onclick="checkVote()">Submit</button> <button onclick='reLoad()' style="float: right;">Reload polls</button>
     <p>Press reload after submitting</p>
     
     <hr> <br>
     
-    <div id="mypolls"></div>
+    <div id="mypolls"><center><div class="loader"></div> <br>
+    <h3>Loading...</h3></center></div>
     
     <br> <hr> <br>
     
@@ -48,6 +50,20 @@
         th, td {
             border-bottom: 1px solid #ddd;
         }
+        
+        .loader {
+  border: 16px solid white; /* Light grey */
+  border-top: 16px solid hotpink; /* Blue */
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
     
     </style>
     
@@ -107,6 +123,10 @@
     
 <script>
 
+    var userId = '';
+    var name = '';
+    var voteAllowed = true;
+    
     var pollMax = 0;
     
     var config = {
@@ -187,6 +207,8 @@
             console.log(data);
             
             for (var p in polls) {
+                    
+                    if (polls[p].pollNumber != null) {
                 
                     mytab = mytab + "<tr>";
                         
@@ -197,6 +219,8 @@
                     mytab = mytab + "</tr>";
                 
                     pollMax = polls[p].pollNumber;
+                        
+                    }
                 
             }
             //mylist = mylist + "</ul>";
@@ -208,7 +232,53 @@
             document.getElementById("numInput").value;
         }
     
+        function checkVote() {
+            
+            voteAllowed = true;
+            var todayAdded = false;
+            
+            var today = new Date().toString();
+            today = today.substring(4,15)
+            
+            firebase.database().ref('/polls/days').once('value').then(function(snapshot) { 
+            var userdata = (snapshot.val());
+            dataarray = [userdata]
+                           
+            polls = dataarray[0]; // put on top, because changed data - not good coding change later
+              
+                    for (var d in polls) {
+                        if (polls[d].date == today) {
+                            todayAdded = true;
+                            for (var u in polls[d]) {
+                                if (polls[d][u].name == name) {
+                                    voteAllowed = false;
+                                    alert("You have already voted today.");
+                                }
+                            }
+                            if (voteAllowed) {
+                                firebase.database().ref('polls/days/' + today).push({
+                                name
+                                }); 
+                            }
+                        }
+                    if (!todayAdded) {
+                            firebase.database().ref('polls/days/' + today).push({
+                            name
+                        });  
+                    }
+                        
+            }
+                    
+                submitPoll();
+                
+            });
+            
+        }
+    
     function submitPoll() {
+            
+        if (voteAllowed) {
+        
         var votePollNum = document.getElementById("pollNum").value;
         var Like = true;
         if (document.getElementById("DL").checked) {
@@ -238,6 +308,8 @@
             }
                         
         });
+            
+        }
         
     }
     
@@ -250,6 +322,8 @@
                            updatepolls(dataarray); 
                         }
                       });
+        
+        document.getElementById("mypolls").innerHTML = "<center><div class='loader'></div> <br> <h3>Loading...</h3></center>";
     }
     
 </script>

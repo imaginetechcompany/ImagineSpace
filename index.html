@@ -325,6 +325,31 @@
             firebase.auth().signOut().then(function() {
             });
         }
+        
+        function reLoad() {
+            
+            firebase.database().ref('/tweets').once('value').then(function(snapshot) {
+                    var data = (snapshot.val());
+                    if (data == null) {
+                      console.log("No data found at /tweets/" + userId);  
+                    } else {
+                        
+                      firebase.database().ref('/users').once('value').then(function(snapshot) { 
+                        var userdata = (snapshot.val());
+                        if (userdata != null) {
+                           dataarray = [data,userdata]
+                           console.log(dataarray)
+                           updatetweets(dataarray); 
+                        }
+                      });
+                      //console.log(data)
+                      //updatetweets(data);
+                    }
+                });
+            
+            document.getElementById("mytweets").innerHTML = "<center><div class='loader'></div> <br> <h3>Loading...</h3></center>";
+            
+        }
     
     </script>
 
@@ -352,7 +377,7 @@
             Tweet:<br>
             <textarea id="twit" type="text" name="thetweet" cols="100" rows="4"></textarea>
         </form> 
-        <button type="button" onclick="tweet()">Submit</button>
+        <button type="button" onclick="tweet()">Submit</button> <button onclick='reLoad()' style="float: right;">Reload posts</button>
     
         <br><br>
         

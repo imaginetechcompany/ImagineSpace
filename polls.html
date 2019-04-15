@@ -239,8 +239,11 @@
             
             var today = new Date().toString();
             today = today.substring(4,15);
+<<<<<<< HEAD
             
             alert(today);
+=======
+>>>>>>> 65fb0a9acb253199cd49f32a958f2d08c9e07a03
             
             firebase.database().ref('/polls/days').once('value').then(function(snapshot) { 
             var userdata = (snapshot.val());

@@ -238,7 +238,9 @@
             var todayAdded = false;
             
             var today = new Date().toString();
-            today = today.substring(4,15)
+            today = today.substring(4,15);
+            
+            alert(today);
             
             firebase.database().ref('/polls/days').once('value').then(function(snapshot) { 
             var userdata = (snapshot.val());

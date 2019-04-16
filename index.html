@@ -102,8 +102,7 @@
         
         var newVidFile = "";
         //var loadTime = new Date();
-        var loadDate = new Date().toString();
-        
+        var loadDate = new Date().toString();        
         
         // Initialize Firebase
         var config = {
@@ -180,18 +179,61 @@
             firebase.database().ref('users/' + userId).update({
                 username: name,
                 email: email,
-                profile_picture : imageUrl
+                profile_picture : imageUrl,
+                userId: userId
+            });
+            firebase.database().ref('users/' + userId + '/followers').push({
+                user: name
             });
         }
         
-        function updatetweets(data) {
-            //var mylist = "<ul>";
+function sleep(seconds) {
+   var currentTime = new Date().getTime();
+
+   while (currentTime + (seconds * 1000) >= new Date().getTime()) {
+   }
+}        
+        function checkU(uID) {
+            
+            var followingUser = false;
+            
+            return new Promise(function(resolve, reject) {
+            firebase.database().ref('/users/' + uID + '/followers').once('value').then(function(snapshot) { 
+                var userdata = (snapshot.val());
+                dataarray = [userdata];
+                console.log(dataarray);
+                           
+                users2 = dataarray[0];
+                    
+                for (var x in users2) {
+                    if (users2[x].user == name) {
+                        followingUser = true;
+                    }
+                }
+                
+                resolve(followingUser);
+                
+            });
+                
+            });
+        }
+        
+        async function updatetweets(data) {
+            
+            var followingUser = false;
+            
             var mytab = "<center><table width=799px>";
             users = data[1]; // put on top, because changed data - not good coding change later
             data = data[0];
             
             for (var u in data) {
+                                     
+                var uID = users[u].userId;
                 
+                followingUser = await checkU(uID);        
+                                                
+                if (followingUser) {
+                    
                 for (var t in data[u]) {
                     mytab = mytab + "<tr>";
                     var date = new Date(data[u][t].time);
@@ -274,16 +316,21 @@
                         mytab = mytab + "<td width='50px'>" + time + "</td>";
                                             
                     }
-                    
-                    mytab = mytab + "</tr> </center>";
-                }   
+                    mytab = mytab + "</tr>";
+                }
             }
-            //mylist = mylist + "</ul>";
-            mytab = mytab + "</table>"
+            }
+                        
+            mytab = mytab + "</table> </center>"
             var mytdiv = document.getElementById("mytweets");
             //mytdiv.innerHTML = mylist;
             mytdiv.innerHTML = mytab;
+            //alert(mytab);
+            
+            //mylist = mylist + "</ul>";
         }
+        
+        function doNothing() {}
         
         // write tweets to firebase
         function tweet() {

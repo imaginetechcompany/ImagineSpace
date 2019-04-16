@@ -1,0 +1,174 @@
+<html>
+
+<script src="https://www.gstatic.com/firebasejs/5.8.5/firebase.js"></script>
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    
+    <script>
+    
+        var config = {
+        apiKey: "AIzaSyAMXtT9JDwMNyxZabBYoRi0041-Rf1vDnY",
+        authDomain: "test-b8fc5.firebaseapp.com",
+        databaseURL: "https://test-b8fc5.firebaseio.com",
+        projectId: "test-b8fc5",
+        storageBucket: "test-b8fc5.appspot.com",
+        messagingSenderId: "6609833657"
+        };
+        firebase.initializeApp(config);
+        
+    </script>
+    
+    <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ImagineSpace</title>
+    <link href="main2.css" rel="stylesheet" type="text/css" />
+    </head>
+    
+    <style>
+/* Style The Dropdown Button */
+.dropbtn {
+  background-color: deeppink;
+  color: white;
+  padding: 16px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+}
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover {background-color: #f1f1f1}
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+/* Change the background color of the dropdown button when the dropdown content is shown */
+.dropdown:hover .dropbtn {
+  background-color: hotpink;
+}
+        
+    .dropdown-content {
+  right: 0;
+}
+        
+</style>
+    
+<div class="dropdown" style="float: right;">
+  <button class="dropbtn">Menu</button>
+  <div class="dropdown-content">
+    <a href="index.html">Home</a>
+      <a href="search.html">Search</a>
+      <a href="polls.html">Polls</a>
+      <a href="profile.html">Profile</a>
+      <a href="about.html">About</a>
+    <a href="help.html">Help & FAQ</a>
+      <a href="tictactoe.html">Games</a>
+  </div>
+</div>
+    
+<h2>Search:</h2>
+<p>Search for a user by their Google Username or their chosen Username</p>
+<br>
+Search: <input type="text" id="inputName"> <button onclick="SubmitUser()">Submit</button><br><br><div id = "followBut"><br></div>
+    
+<br> <br> <hr> <br> <br>
+    
+<center><div id = "profileArea"><h3>Search for a user!</h3></div></center>
+    
+    <script>
+        
+        var searchedUser = "";
+        
+        function SubmitUser() {
+            
+            var infoUname = "";
+            var infoBio = "";
+            var infoPic = "";
+            
+            var userFound = false;
+            
+            var user = document.getElementById("inputName").value;
+            
+            firebase.database().ref('/users').once('value').then(function(snapshot) { 
+            var userdata = (snapshot.val());
+            dataarray = [userdata]
+                           
+            users = dataarray[0]; // put on top, because changed data - not good coding change later
+              
+                for (var u in users) {
+                    if (user == users[u].email || user == users[u].username || user == users[u].username2) {
+                        userFound = true;
+                        if (users[u].username2 != null) {
+                                infoUname = users[u].username2;
+                            } else {
+                                infoUname = users[u].username;
+                            }
+                            if (users[u].bio != null) {
+                                infoBio = users[u].bio;
+                            } else {
+                                infoBio = "This user has not yet made a bio.";
+                            }
+                            if (users[u].profile_picture2 != null) {
+                                infoPic = users[u].profile_picture2;
+                            } else {
+                                infoPic = users[u].profile_picture;
+                            }
+                            document.getElementById("profileArea").innerHTML = "<center><h4>Username:</h4>" + infoUname + " <br><br> <h4>Bio: </h4>" + infoBio + " <br><br> <h4>Profile Pic: </h4><img src = '" + infoPic + "' width = 444px></center>";
+                            searchedUser = users[u].username;
+                    }
+                }
+                
+                if (!userFound) {
+                alert("The user you searched for was not found");
+                } else {
+                    document.getElementById("followBut").innerHTML = "<button onclick='follow()'>Follow</button>";
+                }
+                
+            });
+            
+        }
+
+        /*function follow() {
+            firebase.database().ref('/users').once('value').then(function(snapshot) { 
+            var userdata = (snapshot.val());
+            dataarray = [userdata]
+                           
+            users = dataarray[0];
+                
+            for (var u in users) {
+                if (users[u].username == searchedUser) {
+                    firebase.database().ref('users/' + users.u + "/followers").push({
+                        user: 
+                    });
+                }
+            }
+        }*/
+    
+    </script>
+    
+
+</html>

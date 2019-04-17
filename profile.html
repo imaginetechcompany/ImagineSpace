@@ -140,7 +140,32 @@
         }
         
         function uNameChg() {
+            
+            var uNameOK = true;
             var newName = document.getElementById("uName").value;
+            
+            firebase.database().ref('/users').once('value').then(function(snapshot) { 
+                var userdata = (snapshot.val());
+                    dataarray = [userdata]
+                    console.log(dataarray);
+                users = dataarray[0];
+                
+                for (var u in users) {
+                    if (newName == users[u].username || newName == users[u].username2) {
+                        uNameOK = false;
+                    }
+                }
+                
+                for (i = 0; i < newName.length; i++) {
+                    if (newName,substring(i, i+1) == " ") {
+                        uNameOK = false;
+                    }
+                }
+                
+                if (!uNameOK) {
+                    alert("Your username either contains spaces or someone else has already claimed that username");
+                } else {
+                
             if (newName.length > 17) {
                 alert("Your username cannot be longer than 17 characters");
             } else {
@@ -149,6 +174,11 @@
             });
             alert("Congrats on your new Username!");
             }
+                
+            });
+            
+            }
+            
         }
         
         function encodeImageFileAsURL() {

@@ -208,6 +208,7 @@ function sleep(seconds) {
                 for (var x in users2) {
                     if (users2[x].user == name) {
                         followingUser = true;
+                        followingAnyone = true;
                     }
                 }
                 
@@ -220,6 +221,7 @@ function sleep(seconds) {
         
         async function updatetweets(data) {
             
+            var folllowingAnyone = false;
             var followingUser = false;
             
             var mytab = "<center><table width=799px>";
@@ -325,6 +327,9 @@ function sleep(seconds) {
             var mytdiv = document.getElementById("mytweets");
             //mytdiv.innerHTML = mylist;
             mytdiv.innerHTML = mytab;
+            if (!followingAnyone) {
+                document.getElementById("notFolliwng").innerHTML = "You're not following anyone; search for users to follow in the <b>search</b> tab.";
+            }
             //alert(mytab);
             
             //mylist = mylist + "</ul>";
@@ -463,6 +468,7 @@ function sleep(seconds) {
         
     <br> <br> <hr> <br>
         
+    <div id = "notFollowing"></div>
     <div id="mytweets">
     <center><div class="loader"></div> <br>
     <h3>Loading...</h3></center>

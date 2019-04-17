@@ -89,6 +89,7 @@
     
     <script>
         
+        var followers = [];
         var userId = "";
         //var loadTime = new Date();
         var loadDate = new Date().toString();
@@ -193,6 +194,8 @@
             var infoPic = "";
             var infoBio = "";
             
+            followers = [];
+            
             firebase.database().ref('/users').once('value').then(function(snapshot) { 
                 var userdata = (snapshot.val());
                     dataarray = [userdata]
@@ -214,12 +217,40 @@
                             } else {
                                 infoPic = users[u].profile_picture;
                             }
-                            document.getElementById("YourProfile").innerHTML = "<center><h4>Username:</h4>" + infoUname + " <br><br> <h4>Bio: </h4>" + infoBio + " <br><br> <h4>Profile Pic: </h4><img src = '" + infoPic + "' width = 444px></center>";
+                            for (var x in users[u].followers) {
+                                var alreadyAdded = false;
+                                for (i = 0; i < followers.length; i++) {
+                                    if (followers[i] == users[u].followers[x].user) {
+                                        alreadyAdded = true;
+                                    }
+                                }
+                                if (!alreadyAdded) {
+                                    followers[followers.length] = users[u].followers[x].user;
+                                }
+                            }
+                            if (followers.length - 1 > 0) {
+                                showFollowersButton();
+                            }
+                            document.getElementById("YourProfile").innerHTML = "<center><h4>Username:</h4>" + infoUname + " <br><br> <h4>Followers: </h4>" + (followers.length - 1).toString() + " <br><br> <h4>Bio: </h4>" + infoBio + " <br><br> <h4>Profile Pic: </h4><img src = '" + infoPic + "' width = 444px></center>";
                         }
                     }
                 
                 
             });
+        }
+        
+        function showFollowers() {
+            var display = "<br>";
+            for (i = 0; i < followers.length; i++) {
+                if (followers[i] != name) {
+                    display = display + "-  " + followers[i] + "<br>";
+                }
+            }
+            document.getElementById("followersArea").innerHTML = display;
+        }
+        
+        function showFollowersButton() {
+            document.getElementById("sFbutton").style.display = "block";
         }
         
     </script>
@@ -252,16 +283,12 @@
         <input type="text" id="uName">
         <button onclick="uNameChg()">Submit</button>
         <br><br>
-        <p>Follow (coming soon):</p>
-        <input type="text" id="following">
-        <button onclick="follow()">Submit</button>
-        <br><br>
         <p>New Profile Pic:</p>
         <input id="inputFileToLoad" type="file" onchange="encodeImageFileAsURL();" /> <button onclick="chgPic()">Submit</button>
         <div id="imgTest" style="display:none;"></div>
         <br><br>
         <p>New Bio:</p>
-        <textarea id="newBio"></textarea> <button onclick="chgBio()">Submit</button>
+        <textarea id="newBio"></textarea> <button onclick="chgBio()">Submit</button> <br><br><br> <button onclick="updateInfo()">Reload</button>
         <br><br>
         <hr>
         
@@ -269,7 +296,12 @@
         <div id="YourProfile"><center><div class='loader'></div> <br>
         <h3>Loading...</h3></center></div>
         
-        <br> <hr> <br>
+        <br> <br>
+        
+        <center><button id="sFbutton" onclick = "showFollowers()" style="display: none" class="button-xlarge">Show followers</button>
+        <b><h4><div id="followersArea"></div></h4></b></center>
+        
+        <br> <br> <hr> <br>
 
     <center><div id="mydata"></div>
     <div id="myphoto"></div></center>

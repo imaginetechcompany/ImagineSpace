@@ -122,7 +122,7 @@
     <br> <br>
     
 <h2>Search:</h2>
-<p>Search for a user by their Google Username or their chosen Username</p>
+<p>Search for a user by their Google Username, their Email Address or their Chosen Username</p>
 <br>
 Search: <input type="text" id="inputName"> <button onclick="SubmitUser()">Submit</button><br><br><div id = "followBut"><br></div>
     
@@ -130,9 +130,21 @@ Search: <input type="text" id="inputName"> <button onclick="SubmitUser()">Submit
     
 <center><div id = "profileArea"><h3>Search for a user!</h3></div></center>
     
+    <br> <br>
+        
+        <center><button id="sFbutton" onclick = "showFollowers()" style="display: none" class="button-xlarge">Show followers</button>
+        <b><h4><div id="followersArea"></div></h4></b></center>
+        
+        <br> <br> <hr> <br>
+
+    <center><div id="mydata"></div>
+    <div id="myphoto"></div></center>
+    
     <script>
         
+        var followers = [];
         var searchedUser = "";
+        var searchedU2 = "";
         
         function SubmitUser() {
             
@@ -168,8 +180,20 @@ Search: <input type="text" id="inputName"> <button onclick="SubmitUser()">Submit
                             } else {
                                 infoPic = users[u].profile_picture;
                             }
-                            document.getElementById("profileArea").innerHTML = "<center><h4>Username:</h4>" + infoUname + " <br><br> <h4>Bio: </h4>" + infoBio + " <br><br> <h4>Profile Pic: </h4><img src = '" + infoPic + "' width = 444px></center>";
+                            for (var x in users[u].followers) {
+                                var alreadyAdded = false;
+                                for (i = 0; i < followers.length; i++) {
+                                    if (followers[i] == users[u].followers[x].user) {
+                                        alreadyAdded = true;
+                                    }
+                                }
+                                if (!alreadyAdded) {
+                                    followers[followers.length] = users[u].followers[x].user;
+                                }
+                            }
+                            document.getElementById("profileArea").innerHTML = "<center><h4>Username:</h4>" + infoUname + " <br><br> <h4>Followers: </h4>" + (followers.length - 1).toString() + " <br><br> <h4>Bio: </h4>" + infoBio + " <br><br> <h4>Profile Pic: </h4><img src = '" + infoPic + "' width = 444px></center>";
                             searchedUser = users[u].username;
+                            searchedU2 = users[u].username2;
                     }
                 }
                 
@@ -177,10 +201,25 @@ Search: <input type="text" id="inputName"> <button onclick="SubmitUser()">Submit
                 alert("The user you searched for was not found");
                 } else {
                     document.getElementById("followBut").innerHTML = "<button onclick='follow()'>Follow</button>";
+                    showFollowersButton()
                 }
                 
             });
             
+        }
+        
+        function showFollowers() {
+            var display = "<br>";
+            for (i = 0; i < followers.length; i++) {
+                if (followers[i] != searchedU2 && followers[i] != searchedUser) {
+                    display = display + "-  " + followers[i] + "<br>";
+                }
+            }
+            document.getElementById("followersArea").innerHTML = display;
+        }
+        
+        function showFollowersButton() {
+            document.getElementById("sFbutton").style.display = "block";
         }
 
         function signin() {

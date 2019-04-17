@@ -141,10 +141,14 @@
         
         function uNameChg() {
             var newName = document.getElementById("uName").value;
+            if (newName.length > 17) {
+                alert("Your username cannot be longer than 17 characters");
+            } else {
             firebase.database().ref('users/' + userId).update({
                 username2: newName
             });
             alert("Congrats on your new Username!");
+            }
         }
         
         function encodeImageFileAsURL() {
@@ -175,10 +179,14 @@
         }
         function chgBio() {
             var newBio = document.getElementById("newBio").value;
+            if (newBio.length > 77) {
+                alert("Your bio cannot be longer than 50 characters");
+            } else {
             firebase.database().ref('users/' + userId).update({
                 bio: newBio
             });
             alert("Congrats on your new Bio!");
+            }
         }
         /*function follow() {
             var newName = document.getElementById("following").value;

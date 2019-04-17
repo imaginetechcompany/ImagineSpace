@@ -148,6 +148,7 @@ Search: <input type="text" id="inputName"> <button onclick="SubmitUser()">Submit
         
         function SubmitUser() {
             
+            followers = [];
             var infoUname = "";
             var infoBio = "";
             var infoPic = "";
@@ -194,6 +195,7 @@ Search: <input type="text" id="inputName"> <button onclick="SubmitUser()">Submit
                             document.getElementById("profileArea").innerHTML = "<center><h4>Username:</h4>" + infoUname + " <br><br> <h4>Followers: </h4>" + (followers.length - 1).toString() + " <br><br> <h4>Bio: </h4>" + infoBio + " <br><br> <h4>Profile Pic: </h4><img src = '" + infoPic + "' width = 444px></center>";
                             searchedUser = users[u].username;
                             searchedU2 = users[u].username2;
+                        
                     }
                 }
                 
@@ -201,7 +203,8 @@ Search: <input type="text" id="inputName"> <button onclick="SubmitUser()">Submit
                 alert("The user you searched for was not found");
                 } else {
                     document.getElementById("followBut").innerHTML = "<button onclick='follow()'>Follow</button>";
-                    showFollowersButton()
+                    showFollowersButton();
+                    hideFollowers();
                 }
                 
             });
@@ -220,6 +223,9 @@ Search: <input type="text" id="inputName"> <button onclick="SubmitUser()">Submit
         
         function showFollowersButton() {
             document.getElementById("sFbutton").style.display = "block";
+        }
+        function hideFollowers() {
+            document.getElementById("followersArea").innerHTML = "";
         }
 
         function signin() {

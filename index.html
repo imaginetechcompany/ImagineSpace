@@ -17,6 +17,31 @@
         th, td {
             border-bottom: 1px solid #ddd;
         }
+        
+        #signin{
+            padding: 5px;
+            color: white;
+            background-color: green;
+            font-family: comic-sans;
+        }
+        #signout{
+            padding: 5px;
+            color: white;
+            background-color: red;
+            font-family: comic-sans;
+        }
+        #submit{
+            padding: 5px;
+            color: white;
+            background-color: blue;
+            font-family: comic-sans;
+        }
+        #reload{
+            padding: 5px;
+            color: black;
+            background-color: white;
+            font-family: comic-sans;
+        }
     
     </style>
     
@@ -442,8 +467,8 @@ function sleep(seconds) {
         
         <br>
         
-        <button onclick="signin()">Sign in</button>
-        <button onclick="signout()">Sign out</button>
+        <button id = "signin" onclick="signin()">Sign in</button>
+        <button id = "signout"onclick="signout()">Sign out</button>
                
         <br> <br>
         
@@ -451,7 +476,7 @@ function sleep(seconds) {
             Tweet:<br>
             <textarea id="twit" type="text" name="thetweet" cols="100" rows="4"></textarea>
         </form> 
-        <button type="button" onclick="tweet()">Submit</button> <button onclick='reLoad()' style="float: right;">Reload posts</button>
+        <button id = "submit" type="button" onclick="tweet()">Submit</button> <button id= "reload" onclick='reLoad()' style="float: right;">Reload posts</button>
     
         <br><br>
         

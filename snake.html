@@ -21,10 +21,11 @@
 <body>
 <canvas width="400" height="400" id="game"></canvas>
 <script>
-var canvas = document.getElementById('game');
-var context = canvas.getContext('2d');
+var canvas2 = document.getElementById('game');
+var context = canvas2.getContext('2d');
 var grid = 16;
 var count = 0;
+    var score = 0;
   
 var snake = {
   x: 160,
@@ -57,23 +58,23 @@ function loop() {
     return;
   }
   count = 0;
-  context.clearRect(0,0,canvas.width,canvas.height);
+  context.clearRect(0,0,canvas2.width,canvas2.height);
   // move snake by it's velocity
   snake.x += snake.dx;
   snake.y += snake.dy;
   // wrap snake position horizontally on edge of screen
   if (snake.x < 0) {
-    snake.x = canvas.width - grid;
+    snake.x = canvas2.width - grid;
   }
-  else if (snake.x >= canvas.width) {
+  else if (snake.x >= canvas2.width) {
     snake.x = 0;
   }
   
   // wrap snake position vertically on edge of screen
   if (snake.y < 0) {
-    snake.y = canvas.height - grid;
+    snake.y = canvas2.height - grid;
   }
-  else if (snake.y >= canvas.height) {
+  else if (snake.y >= canvas2.height) {
     snake.y = 0;
   }
   // keep track of where snake has been. front of the array is always the head
@@ -94,9 +95,10 @@ function loop() {
     // snake ate apple
     if (cell.x === apple.x && cell.y === apple.y) {
       snake.maxCells++;
-      // canvas is 400x400 which is 25x25 grids 
+      // canvas2 is 400x400 which is 25x25 grids 
       apple.x = getRandomInt(0, 25) * grid;
       apple.y = getRandomInt(0, 25) * grid;
+        score++;
     }
     // check collision with all cells after this one (modified bubble sort)
     for (var i = index + 1; i < snake.cells.length; i++) {
@@ -111,6 +113,7 @@ function loop() {
         snake.dy = 0;
         apple.x = getRandomInt(0, 25) * grid;
         apple.y = getRandomInt(0, 25) * grid;
+        score = 0;
       }
     }
   });

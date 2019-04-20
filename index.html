@@ -140,7 +140,7 @@
             tabWidth = 200;
             imgWidth = 100;
             profilePic = false;
-            document.getElementById("twtArea").innerHTML = "<textarea id='twit' type='text' name='thetweet' cols='33' rows='4'></textarea>";
+            document.getElementById("twtArea").style.width = '250px';
         }
         
         var newVidFile = "";
@@ -251,7 +251,9 @@ function sleep(seconds) {
                 for (var x in users2) {
                     if (users2[x].user == name) {
                         followingUser = true;
+                        if (uID != userId) {
                         followingAnyone = true;
+                        }
                     }
                 }
                 

@@ -140,7 +140,7 @@
             tabWidth = 200;
             imgWidth = 100;
             profilePic = false;
-            var twtArea = document.getElementById("twtArea");
+            var twtArea = document.getElementById("twit");
             twtArea.style.width = '250px';
         }
         
@@ -499,7 +499,7 @@ function sleep(seconds) {
         
         <form>
             <h3>Tweet:</h3>
-            <div id="twtArea"><textarea id="twit" type="text" name="thetweet" cols="100" rows="4"></textarea></div>
+            <textarea id="twit" type="text" name="thetweet" cols="100" rows="4"></textarea>
         </form> 
         <button id = "submit" type="button" onclick="tweet()">Submit</button> <button id= "reload" onclick='reLoad()' style="float: right;">Reload posts</button>
     

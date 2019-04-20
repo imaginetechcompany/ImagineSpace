@@ -147,9 +147,9 @@
 <h2>Search:</h2>
 <p>Search for a user by their Google Username, their Email Address or their Chosen Username</p>
 <br>
-Search: <input type="text" id="inputName"> <button id = "submit" onclick="SubmitUser()">Submit</button><br><br><div id = "followBut"><br></div>
+Search: <input type="text" id="inputName"> <button id = "submit" onclick="SubmitUser()">Submit</button><br><br><div id = "followBut"><br></div> <div id = "unfollowBut"><br></div>
     
-<br> <br> <hr> <br> <br>
+<br> <hr> <br> <br>
     
 <center><div id = "profileArea"><h3>Search for a user!</h3></div></center>
     
@@ -226,6 +226,7 @@ Search: <input type="text" id="inputName"> <button id = "submit" onclick="Submit
                 alert("The user you searched for was not found");
                 } else {
                     document.getElementById("followBut").innerHTML = "<button onclick='follow()'>Follow</button>";
+                    //document.getElementById("unfollowBut").innerHTML = "<button onclick='unfollow()'>Unfollow</button>";
                     showFollowersButton();
                     hideFollowers();
                 }
@@ -237,7 +238,7 @@ Search: <input type="text" id="inputName"> <button id = "submit" onclick="Submit
         function showFollowers() {
             var display = "<br>";
             for (i = 0; i < followers.length; i++) {
-                if (followers[i] != searchedU2 && followers[i] != searchedUser) {
+                if (followers[i] != searchedU2 && followers[i] != searchedUser && followers[i] != "") {
                     display = display + "-  " + followers[i] + "<br>";
                 }
             }
@@ -291,6 +292,37 @@ Search: <input type="text" id="inputName"> <button id = "submit" onclick="Submit
                 alert("You are not signed in");
             }
         }
+        
+        /*function unfollow() {
+            if (signedIn) {
+            
+            firebase.database().ref('/users').once('value').then(function(snapshot) { 
+            var userdata = (snapshot.val());
+            dataarray = [userdata]
+                           
+            users = dataarray[0];
+                
+            for (var u in users) {
+                if (users[u].username == searchedUser || users[u].username2 == searchedUser) {
+                    for (var u2 in users[u].followers) {
+                        if (users[u].followers[u2].user == name) {
+                            alert(users[u].followers[u2].user);
+                            console.log(users[u].followers.u2);
+                            firebase.database().ref('users/' + users[u].userId + "/followers/" + users[u].followers.u2).set({user: ""});
+                            alert("removed");
+                        }
+                    }
+                }
+            }
+                
+            alert("You have unfollowed " + searchedUser);
+                
+            });
+                
+            } else {
+                alert("You are not signed in");
+            }
+        }*/
     
     </script>
     

@@ -132,16 +132,6 @@
     
     <script>
         
-        var tabWidth = 799;
-        var imgWidth = 250;
-        var profilePic = true;
-        
-        if ( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
-            tabWidth = 270;
-            imgWidth = 100;
-            profilePic = false;
-        }
-        
         var newVidFile = "";
         //var loadTime = new Date();
         var loadDate = new Date().toString();        
@@ -250,9 +240,7 @@ function sleep(seconds) {
                 for (var x in users2) {
                     if (users2[x].user == name) {
                         followingUser = true;
-                        if (uID != userId) {
                         followingAnyone = true;
-                        }
                     }
                 }
                 
@@ -268,7 +256,7 @@ function sleep(seconds) {
             var folllowingAnyone = false;
             var followingUser = false;
             
-            var mytab = "<center><table id='tweetTable' width=" + tabWidth + "px>";
+            var mytab = "<center><table width=799px>";
             users = data[1]; // put on top, because changed data - not good coding change later
             data = data[0];
             
@@ -313,12 +301,10 @@ function sleep(seconds) {
                         time = time.substring(4,15);
                     }
                     if (data[u][t].img != null && data[u][t].img != "") {
-                        if (profilePic) {
                         if (users[u].profile_picture2 == null) {
                             mytab = mytab + "<td><img class = 'zoom' src='" + users[u].profile_picture + "' width='70px'></td>";
                         } else {
                             mytab = mytab + "<td><img class = 'zoom' src='" + users[u].profile_picture2 + "' width='70px'></td>";
-                        }
                         }
                         mytab = mytab + "<td></td>";
                         if (users[u].username2 == null) {
@@ -327,16 +313,14 @@ function sleep(seconds) {
                             mytab = mytab + "<td width=50px> <center>" + users[u].username2 + "</center> </td>";
                         }
                         mytab = mytab + "<td></td>";
-                        mytab = mytab + "<td> <img class = 'zoom' src='" + data[u][t].img + "' width='" + imgWidth + "px'>" + "<center>" + data[u][t].tweet + "</center>"  + "</td>";
+                        mytab = mytab + "<td> <img class = 'zoom' src='" + data[u][t].img + "' width='250px'>" + "<center>" + data[u][t].tweet + "</center>"  + "</td>";
                         mytab = mytab + "<td></td>";
                         mytab = mytab + "<td width='50px'>" + time + "</td>";
                     } else if (data[u][t].vid != null && data[u][t].vid != "") {
-                        if (profilePic) {
                         if (users[u].profile_picture2 == null) {
                             mytab = mytab + "<td><img class = 'zoom' src='" + users[u].profile_picture + "' width='70px'></td>";
                         } else {
                             mytab = mytab + "<td><img class = 'zoom' src='" + users[u].profile_picture2 + "' width='70px'></td>";
-                        }
                         }
                         mytab = mytab + "<td></td>";
                         if (users[u].username2 == null) {
@@ -345,16 +329,14 @@ function sleep(seconds) {
                             mytab = mytab + "<td width=50px> <center>" + users[u].username2 + "</center> </td>";
                         }
                         mytab = mytab + "<td></td>";
-                        mytab = mytab + "<td width='1px'> <center> <iframe width='" + imgWidth + "' src='" + data[u][t].vid + "'frameborder='0' allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture' allowfullscreen></iframe> <br>" + data[u][t].tweet + "</center>"  + "</td>";
+                        mytab = mytab + "<td width='1px'> <center> <iframe width='250' src='" + data[u][t].vid + "'frameborder='0' allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture' allowfullscreen></iframe> <br>" + data[u][t].tweet + "</center>"  + "</td>";
                         mytab = mytab + "<td></td>";
                         mytab = mytab + "<td width='50px'>" + time + "</td>";
                     } else {
-                        if (profilePic) {
                         if (users[u].profile_picture2 == null) {
                             mytab = mytab + "<td><img class = 'zoom' src='" + users[u].profile_picture + "' width='70px'></td>";
                         } else {
                             mytab = mytab + "<td><img class = 'zoom' src='" + users[u].profile_picture2 + "' width='70px'></td>";
-                        }
                         }
                         mytab = mytab + "<td></td>";
                         if (users[u].username2 == null) {
@@ -383,7 +365,6 @@ function sleep(seconds) {
             //alert(mytab);
             
             //mylist = mylist + "</ul>";
-            
         }
         
         function doNothing() {}
@@ -484,11 +465,13 @@ function sleep(seconds) {
       <a href="search.html">Search</a>
       <a href="polls.html">Polls</a>
       <a href="profile.html">Profile</a>
-      <a href="games.html">Games</a>
       <a href="about.html">About</a>
     <a href="help.html">Help & FAQ</a>
+      <a href="tictactoe.html">Games</a>
   </div>
 </div>
+        
+        <br>
         
         <button id = "signin" onclick="signin()">Sign in</button>
         <button id = "signout"onclick="signout()">Sign out</button>
@@ -496,21 +479,21 @@ function sleep(seconds) {
         <br> <br>
         
         <form>
-            <h3>Tweet:</h3>
+            Tweet:<br>
             <textarea id="twit" type="text" name="thetweet" cols="100" rows="4"></textarea>
         </form> 
         <button id = "submit" type="button" onclick="tweet()">Submit</button> <button id= "reload" onclick='reLoad()' style="float: right;">Reload posts</button>
     
         <br><br>
         
-        <h3>Image:</h3>
-        <input id="inputFileToLoad" type="file" onchange="encodeImageFileAsURL();" />
+        Image:
+        <br><input id="inputFileToLoad" type="file" onchange="encodeImageFileAsURL();" />
         <div id="imgTest" style="display:none;"></div>
         
         <br><br>
         
-        <h3>Video:</h3>
-        <input id="vidFileID" type="text"/>
+        Video:
+        <br><input id="vidFileID" type="text"/>
         <div id="vidTest" style="display:none;"></div>
         <br>
         *Click share on a video, then embed, then copy & paste only the 'http...' part of the <b>embed code</b>*
@@ -530,14 +513,6 @@ function sleep(seconds) {
         
 
     </body>
-    
-    <script>
-    
-        if ( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
-            document.getElementById("twit").cols = "39";
-        }
-        
-    </script>
 
     
 </html>

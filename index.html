@@ -134,10 +134,13 @@
         
         var tabWidth = 799;
         var imgWidth = 250;
+        var profilePic = true;
         
         if ( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
             tabWidth = 200;
             imgWidth = 100;
+            profilePic = false;
+            document.getElementById("twtArea").innerHTML = "<textarea id='twit' type='text' name='thetweet' cols='33' rows='4'></textarea>"
         }
         
         var newVidFile = "";
@@ -309,10 +312,12 @@ function sleep(seconds) {
                         time = time.substring(4,15);
                     }
                     if (data[u][t].img != null && data[u][t].img != "") {
+                        if (profilePic) {
                         if (users[u].profile_picture2 == null) {
                             mytab = mytab + "<td><img class = 'zoom' src='" + users[u].profile_picture + "' width='70px'></td>";
                         } else {
                             mytab = mytab + "<td><img class = 'zoom' src='" + users[u].profile_picture2 + "' width='70px'></td>";
+                        }
                         }
                         mytab = mytab + "<td></td>";
                         if (users[u].username2 == null) {
@@ -325,10 +330,12 @@ function sleep(seconds) {
                         mytab = mytab + "<td></td>";
                         mytab = mytab + "<td width='50px'>" + time + "</td>";
                     } else if (data[u][t].vid != null && data[u][t].vid != "") {
+                        if (profilePic) {
                         if (users[u].profile_picture2 == null) {
                             mytab = mytab + "<td><img class = 'zoom' src='" + users[u].profile_picture + "' width='70px'></td>";
                         } else {
                             mytab = mytab + "<td><img class = 'zoom' src='" + users[u].profile_picture2 + "' width='70px'></td>";
+                        }
                         }
                         mytab = mytab + "<td></td>";
                         if (users[u].username2 == null) {
@@ -341,10 +348,12 @@ function sleep(seconds) {
                         mytab = mytab + "<td></td>";
                         mytab = mytab + "<td width='50px'>" + time + "</td>";
                     } else {
+                        if (profilePic) {
                         if (users[u].profile_picture2 == null) {
                             mytab = mytab + "<td><img class = 'zoom' src='" + users[u].profile_picture + "' width='70px'></td>";
                         } else {
                             mytab = mytab + "<td><img class = 'zoom' src='" + users[u].profile_picture2 + "' width='70px'></td>";
+                        }
                         }
                         mytab = mytab + "<td></td>";
                         if (users[u].username2 == null) {
@@ -487,7 +496,7 @@ function sleep(seconds) {
         
         <form>
             <h3>Tweet:</h3>
-            <textarea id="twit" type="text" name="thetweet" cols="100" rows="4"></textarea>
+            <div id="twtArea"><textarea id="twit" type="text" name="thetweet" cols="100" rows="4"></textarea></div>
         </form> 
         <button id = "submit" type="button" onclick="tweet()">Submit</button> <button id= "reload" onclick='reLoad()' style="float: right;">Reload posts</button>
     

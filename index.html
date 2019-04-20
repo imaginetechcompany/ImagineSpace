@@ -133,9 +133,11 @@
     <script>
         
         var tabWidth = 799;
+        var imgWidth = 250;
         
         if ( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
             tabWidth = 200;
+            imgWidth = 100;
         }
         
         var newVidFile = "";
@@ -319,7 +321,7 @@ function sleep(seconds) {
                             mytab = mytab + "<td width=50px> <center>" + users[u].username2 + "</center> </td>";
                         }
                         mytab = mytab + "<td></td>";
-                        mytab = mytab + "<td> <img class = 'zoom' src='" + data[u][t].img + "' width='250px'>" + "<center>" + data[u][t].tweet + "</center>"  + "</td>";
+                        mytab = mytab + "<td> <img class = 'zoom' src='" + data[u][t].img + "' width='" + imgWidth + "px'>" + "<center>" + data[u][t].tweet + "</center>"  + "</td>";
                         mytab = mytab + "<td></td>";
                         mytab = mytab + "<td width='50px'>" + time + "</td>";
                     } else if (data[u][t].vid != null && data[u][t].vid != "") {
@@ -335,7 +337,7 @@ function sleep(seconds) {
                             mytab = mytab + "<td width=50px> <center>" + users[u].username2 + "</center> </td>";
                         }
                         mytab = mytab + "<td></td>";
-                        mytab = mytab + "<td width='1px'> <center> <iframe width='250' src='" + data[u][t].vid + "'frameborder='0' allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture' allowfullscreen></iframe> <br>" + data[u][t].tweet + "</center>"  + "</td>";
+                        mytab = mytab + "<td width='1px'> <center> <iframe width='" + imgWidth + "' src='" + data[u][t].vid + "'frameborder='0' allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture' allowfullscreen></iframe> <br>" + data[u][t].tweet + "</center>"  + "</td>";
                         mytab = mytab + "<td></td>";
                         mytab = mytab + "<td width='50px'>" + time + "</td>";
                     } else {

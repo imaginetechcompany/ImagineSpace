@@ -34,7 +34,7 @@
     <h3>*You can only vote once per day*</h3>
     <div id="numInput">Poll number: <input type="number" value='1' id="pollNum" min=1 max=1></div>
     <input type=radio name="vote" value="Like" checked> Like <input id="DL" type=radio name="vote" value="Dislike"> Dislike <br>
-    <button onclick="checkVote()">Submit</button> <button onclick='reLoad()' style="float: right;">Reload polls</button>
+    <button id = "submit" onclick="checkVote()">Submit</button> <button onclick='reLoad()' style="float: right;">Reload polls</button>
     <p>Press reload after submitting</p>
     
     <hr> <br>
@@ -66,6 +66,14 @@
             background-color: red;
             font-family: comic-sans;
             font-size: 15px;
+        }
+        #submit{
+            padding: 5px;
+            color: white;
+            background-color: blue;
+            font-family: comic-sans;
+            font-size: 30px;
+
         }
         
         .loader {

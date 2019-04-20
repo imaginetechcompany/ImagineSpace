@@ -125,6 +125,14 @@
     
 <script>
 
+    tabWidth = 785;
+    imgWidth = 400;
+    
+    if ( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+        tabWidth = 270;
+        imgWidth = 100;
+    }
+    
     var userId = '';
     var name = '';
     var voteAllowed = true;
@@ -204,7 +212,7 @@
     
         function updatepolls(data) {
             //var mylist = "<ul>";
-            var mytab = "<table width=785px>";
+            var mytab = "<table width=" + tabWidth + "px>";
             polls = data[0]; // put on top, because changed data - not good coding change later
             console.log(data);
             
@@ -215,7 +223,7 @@
                     mytab = mytab + "<tr>";
                         
                         mytab = mytab + "<td width=50px> <h2> <center>" + polls[p].pollNumber + "</center> </h2> </td>";
-                        mytab = mytab + "<td width=500px>" + "<img width=400px src='" + polls[p].img + "'> <h3> <center>" + polls[p].caption + "</center> </h3> </td>";
+                        mytab = mytab + "<td width=500px>" + "<img width=" + imgWidth + "px src='" + polls[p].img + "'> <h3> <center>" + polls[p].caption + "</center> </h3> </td>";
                         mytab = mytab + "<td width=75px> <center>" + "Likes: <br>" + polls[p].likes + "<br><br> Disikes: <br>" + polls[p].dislikes + "</center> </td>";
                     
                     mytab = mytab + "</tr>";

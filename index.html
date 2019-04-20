@@ -141,7 +141,7 @@
             imgWidth = 100;
             profilePic = false;
             twtArea = document.getElementById("twit");
-            twtArea.style.width = '250px';
+            twtArea.cols = "33";
         }
         
         var newVidFile = "";
@@ -499,7 +499,7 @@ function sleep(seconds) {
         
         <form>
             <h3>Tweet:</h3>
-            <textarea id="twit" type="text" name="thetweet" rows="4" style="width: 650px"></textarea>
+            <textarea id="twit" type="text" name="thetweet" cols="100" rows="4"></textarea>
         </form> 
         <button id = "submit" type="button" onclick="tweet()">Submit</button> <button id= "reload" onclick='reLoad()' style="float: right;">Reload posts</button>
     

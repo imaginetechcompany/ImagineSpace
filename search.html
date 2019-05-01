@@ -48,6 +48,34 @@
     </head>
     
     <style>
+        
+        .loader {
+  border: 16px solid white; /* Light grey */
+  border-top: 16px solid hotpink; /* Blue */
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+        
+        .zoom {
+  transition: transform .25s; /* Animation */
+}
+    
+.zoom:hover {
+  transform: scale(2.3); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+}
+        
+        tr:hover {background-color: #f5f5f5;}
+        th, td {
+            border-bottom: 1px solid #ddd;
+        }
+        
         #signin{
             padding: 5px;
             color: white;
@@ -149,7 +177,7 @@ Search: <input type="text" id="inputName"> <button id = "submit" onclick="Submit
     <br> <br>
         
         <center><button id="sFbutton" onclick = "showFollowers()" style="display: none" class="button-xlarge">Show followers</button>
-        <b><h4><div id="followersArea"></div></h4></b></center>
+        <b><h4><div id="followersArea"></div></h4></b> <br> <div id="xtraDiv"></div> <button id="sTbutton" onclick = "showTweets()" style="display: none" class="button-xlarge">Show tweets</button></center> <br> <div id="tweetsArea"></div>
         
         <br> <br> <hr> <br>
 
@@ -158,11 +186,27 @@ Search: <input type="text" id="inputName"> <button id = "submit" onclick="Submit
     
     <script>
         
+        tabWidth = 799;
+        imgWidth = 300;
+        profilePic = true;
+    
+    if ( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+        tabWidth = 270;
+        imgWidth = 125;
+        profilePic = false;
+    }
+        
+        var loadDate = new Date().toString();        
+        var mytab = "";
         var followers = [];
         var searchedUser = "";
         var searchedU2 = "";
         
         function SubmitUser() {
+            
+            document.getElementById("tweetsArea").innerHTML = "";
+            
+            loadDate = new Date().toString();
             
             followers = [];
             var infoUname = "";
@@ -204,7 +248,7 @@ Search: <input type="text" id="inputName"> <button id = "submit" onclick="Submit
                                         alreadyAdded = true;
                                     }
                                 }
-                                if (!alreadyAdded) {
+                                if (!alreadyAdded && users[u].followers[x].following == true) {
                                     followers[followers.length] = users[u].followers[x].user;
                                 }
                             }
@@ -219,8 +263,9 @@ Search: <input type="text" id="inputName"> <button id = "submit" onclick="Submit
                 alert("The user you searched for was not found");
                 } else {
                     document.getElementById("followBut").innerHTML = "<button onclick='follow()'>Follow</button>";
-                    //document.getElementById("unfollowBut").innerHTML = "<button onclick='unfollow()'>Unfollow</button>";
+                    document.getElementById("unfollowBut").innerHTML = "<button onclick='unfollow()'>Unfollow</button>";
                     showFollowersButton();
+                    showTweetsButton();
                     hideFollowers();
                 }
                 
@@ -238,8 +283,128 @@ Search: <input type="text" id="inputName"> <button id = "submit" onclick="Submit
             document.getElementById("followersArea").innerHTML = display;
         }
         
+        function showTweets() {
+            document.getElementById("tweetsArea").innerHTML = "<center><div class='loader'></div> <br> <h3>Loading...</h3></center>";
+            
+           mytab = "<center><table width=" + tabWidth + ">";
+            firebase.database().ref('/tweets').once('value').then(function(snapshot) {
+                    var data = (snapshot.val());
+                        firebase.database().ref('/users').once('value').then(function(snapshot) { 
+                        var userdata = (snapshot.val());
+                           dataarray = [data,userdata]
+                            users = dataarray[1]; // put on top, because changed data - not good coding change later
+            data = dataarray[0];
+            
+            for (var u in data) {
+                                                                                                     
+                if (users[u].username == searchedUser || users[u].username2 == searchedUser) {
+                    
+                for (var t in data[u]) {
+                    mytab = mytab + "<tr>";
+                    var date = new Date(data[u][t].time);
+                    var time = date.toString();
+                    if (time.substring(0,15) == loadDate.substring(0,15)) {
+                        if (time.substring(16,18) == loadDate.substring(16,18)) {
+                            var num1 = Number(loadDate.substring(19,21));
+                            var num2 = Number(time.substring(19,21));
+                            console.log(num1);
+                            var num3 = num1 - num2;
+                            time = num3.toString() + " minutes ago";
+                        } else {
+                            var num1 = Number(loadDate.substring(16,18));
+                            var num2 = Number(time.substring(16,18));
+                            var num3 = num1 - num2;
+                            if (num3 == 1) {
+                                var num1 = Number(loadDate.substring(19,21));
+                                var num2 = Number(time.substring(19,21));
+                                console.log(num1);
+                                var num3 = num1 - num2 + 60;
+                                if (num3 > 59) {
+                                    time = "1 hour ago"
+                                } else {
+                                    time = num3.toString() + " minutes ago";
+                                }
+                            } else {
+                                time = num3.toString() + " hours ago";
+                            }
+                        }
+                    } else {
+                        time = time.substring(4,15);
+                    }
+                    if (data[u][t].img != null && data[u][t].img != "") {
+                        if (profilePic) {
+                        if (users[u].profile_picture2 == null) {
+                            mytab = mytab + "<td width=80px><img class = 'zoom' src='" + users[u].profile_picture + "' width='70px'></td>";
+                        } else {
+                            mytab = mytab + "<td width=80px><img class = 'zoom' src='" + users[u].profile_picture2 + "' width='70px'></td>";
+                        }
+                        }
+                        mytab = mytab + "<td width=2px></td>";
+                        if (users[u].username2 == null) {
+                            mytab = mytab + "<td width=50px> <center>" + users[u].username + "</center> </td>";
+                        } else {
+                            mytab = mytab + "<td width=50px> <center>" + users[u].username2 + "</center> </td>";
+                        }
+                        mytab = mytab + "<td width=2px></td>";
+                        mytab = mytab + "<td> <img class = 'zoom' src='" + data[u][t].img + "' width='" + imgWidth + "'>" + "<center>" + data[u][t].tweet + "</center>"  + "</td>";
+                        mytab = mytab + "<td width=2px></td>";
+                        mytab = mytab + "<td width='50px'>" + time + "</td>";
+                    } else if (data[u][t].vid != null && data[u][t].vid != "") {
+                        if (profilePic) {
+                        if (users[u].profile_picture2 == null) {
+                            mytab = mytab + "<td width=80px><img class = 'zoom' src='" + users[u].profile_picture + "' width='70px'></td>";
+                        } else {
+                            mytab = mytab + "<td width=80px><img class = 'zoom' src='" + users[u].profile_picture2 + "' width='70px'></td>";
+                        }
+                        }
+                        mytab = mytab + "<td width=2px></td>";
+                        if (users[u].username2 == null) {
+                            mytab = mytab + "<td width=50px> <center>" + users[u].username + "</center> </td>";
+                        } else {
+                            mytab = mytab + "<td width=50px> <center>" + users[u].username2 + "</center> </td>";
+                        }
+                        mytab = mytab + "<td width=2px></td>";
+                        mytab = mytab + "<td width='1px'> <center> <iframe width='" + imgWidth + "' src='" + data[u][t].vid + "'frameborder='0' allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture' allowfullscreen></iframe> <br>" + data[u][t].tweet + "</center>"  + "</td>";
+                        mytab = mytab + "<td width=2px></td>";
+                        mytab = mytab + "<td width='50px'>" + time + "</td>";
+                    } else {
+                        if (profilePic) {
+                        if (users[u].profile_picture2 == null) {
+                            mytab = mytab + "<td width=80px><img class = 'zoom' src='" + users[u].profile_picture + "' width='70px'></td>";
+                        } else {
+                            mytab = mytab + "<td width=80px><img class = 'zoom' src='" + users[u].profile_picture2 + "' width='70px'></td>";
+                        }
+                        }
+                        mytab = mytab + "<td width=2px></td>";
+                        if (users[u].username2 == null) {
+                            mytab = mytab + "<td width=50px> <center>" + users[u].username + "</center> </td>";
+                        } else {
+                            mytab = mytab + "<td width=50px> <center>" + users[u].username2 + "</center> </td>";
+                        }
+                        mytab = mytab + "<td width=2px></td>";
+                        mytab = mytab + "<td width='1px'>" + data[u][t].tweet + "</td>";
+                        mytab = mytab + "<td width=2px></td>";
+                        mytab = mytab + "<td width='50px'>" + time + "</td>";
+                                            
+                    }
+                    mytab = mytab + "</tr>";
+                }
+            }
+            }
+                        
+            mytab = mytab + "</table> </center>";
+            document.getElementById("tweetsArea").innerHTML = mytab;
+                            
+                      });
+                    });
+        }
+        
         function showFollowersButton() {
             document.getElementById("sFbutton").style.display = "block";
+        }
+        function showTweetsButton() {
+            document.getElementById("sTbutton").style.display = "block";
+            document.getElementById("xtraDiv").innerHTML = "<hr> <br>";
         }
         function hideFollowers() {
             document.getElementById("followersArea").innerHTML = "";
@@ -271,9 +436,25 @@ Search: <input type="text" id="inputName"> <button id = "submit" onclick="Submit
                 
             for (var u in users) {
                 if (users[u].username == searchedUser || users[u].username2 == searchedUser) {
-                    firebase.database().ref('users/' + users[u].userId + "/followers").push({
-                        user: name
-                    });
+                    var xyz = 0;
+                    var xyzBool = false;
+                    for (var u2 in users[u].followers) {
+                        xyz++;
+                        if (users[u].followers[u2].user == name) {
+                            firebase.database().ref('users/' + users[u].userId + "/followers/" + xyz.toString()).update({
+                                user: name,
+                                following: true
+                            });
+                            xyzBool = true;
+                        }
+                    }
+                    xyz++;
+                    if (!xyzBool) {
+                        firebase.database().ref('users/' + users[u].userId + "/followers/" + xyz.toString()).update({
+                            user: name,
+                            following: true
+                        });
+                    }
                 }
             }
                 
@@ -286,7 +467,7 @@ Search: <input type="text" id="inputName"> <button id = "submit" onclick="Submit
             }
         }
         
-        /*function unfollow() {
+        function unfollow() {
             if (signedIn) {
             
             firebase.database().ref('/users').once('value').then(function(snapshot) { 
@@ -295,14 +476,16 @@ Search: <input type="text" id="inputName"> <button id = "submit" onclick="Submit
                            
             users = dataarray[0];
                 
+                var xyz = 0;
+                
             for (var u in users) {
                 if (users[u].username == searchedUser || users[u].username2 == searchedUser) {
                     for (var u2 in users[u].followers) {
+                        xyz++;
                         if (users[u].followers[u2].user == name) {
-                            alert(users[u].followers[u2].user);
-                            console.log(users[u].followers.u2);
-                            firebase.database().ref('users/' + users[u].userId + "/followers/" + users[u].followers.u2).set({user: ""});
-                            alert("removed");
+                            firebase.database().ref('users/' + users[u].userId + "/followers/" + xyz.toString()).update({
+                                following: false
+                            });
                         }
                     }
                 }
@@ -315,7 +498,7 @@ Search: <input type="text" id="inputName"> <button id = "submit" onclick="Submit
             } else {
                 alert("You are not signed in");
             }
-        }*/
+        }
     
     </script>
     

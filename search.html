@@ -273,7 +273,18 @@ Search: <input type="text" id="inputName"> <button id = "submit" onclick="Submit
             
         }
         
+        var showFcount = 0;
+        
         function showFollowers() {
+            
+            if (showFcount % 2 == 0) {
+                document.getElementById("followersArea").style.display = "block";
+            } else {
+                document.getElementById("followersArea").style.display = "none";
+            }
+            
+            showFcount++;
+            
             var display = "<br>";
             for (i = 0; i < followers.length; i++) {
                 if (followers[i] != searchedU2 && followers[i] != searchedUser && followers[i] != "") {
@@ -283,10 +294,21 @@ Search: <input type="text" id="inputName"> <button id = "submit" onclick="Submit
             document.getElementById("followersArea").innerHTML = display;
         }
         
+        var showTcount = 0;
+        
         function showTweets() {
+            
+            if (showTcount % 2 == 0) {
+                document.getElementById("tweetsArea").style.display = "block";
+            } else {
+                document.getElementById("tweetsArea").style.display = "none";
+            }
+            
+            showTcount++;
+            
             document.getElementById("tweetsArea").innerHTML = "<center><div class='loader'></div> <br> <h3>Loading...</h3></center>";
             
-           mytab = "<center><table width=" + tabWidth + ">";
+           var mytab = "<center><table width=" + tabWidth + ">";
             firebase.database().ref('/tweets').once('value').then(function(snapshot) {
                     var data = (snapshot.val());
                         firebase.database().ref('/users').once('value').then(function(snapshot) { 
@@ -393,6 +415,7 @@ Search: <input type="text" id="inputName"> <button id = "submit" onclick="Submit
             }
                         
             mytab = mytab + "</table> </center>";
+            document.getElementById("tweetsArea").innerHTML = "";
             document.getElementById("tweetsArea").innerHTML = mytab;
                             
                       });

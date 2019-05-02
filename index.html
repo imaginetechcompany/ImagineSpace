@@ -226,7 +226,30 @@
                 profile_picture : imageUrl,
                 userId: userId
             });
+            
+            
+            firebase.database().ref('/users').once('value').then(function(snapshot) { 
+            var userdata = (snapshot.val());
+            dataarray = [userdata]
+                           
+            users = dataarray[0];
+                
+            for (var u in users) {
+                
+                if (users[u].email == email) {
+
+                        firebase.database().ref('users/' + users[u].userId + "/followers/1/").update({
+                            user: name,
+                            following: true
+                        });
+                }
+                    
+                }
+                            
+            });
         }
+ 
+var followingAnyone = false;
         
 function sleep(seconds) {
    var currentTime = new Date().getTime();
@@ -247,9 +270,11 @@ function sleep(seconds) {
                 users2 = dataarray[0];
                     
                 for (var x in users2) {
-                    if (users2[x].user == name) {
+                    if (users2[x].user == name && uID != userId) {
                         followingUser = true;
                         followingAnyone = true;
+                    } else if (users2[x].user == name) {
+                        followingUser = true;
                     }
                 }
                 
@@ -260,9 +285,15 @@ function sleep(seconds) {
             });
         }
         
+        function deleteTweet(ref) {
+            if(confirm("Are you sure you want to delete this tweet? Hit OK to continue or cancel to stop.")) {
+                alert("tweets/" + userId + "/" + ref);
+                firebase.database().ref("tweets/" + userId + "/" + ref).remove();
+            }
+        }
+        
         async function updatetweets(data) {
             
-            var folllowingAnyone = false;
             var followingUser = false;
             
             var mytab = "<center><table width=" + tabWidth + ">";
@@ -270,14 +301,27 @@ function sleep(seconds) {
             data = data[0];
             
             for (var u in data) {
-                                     
+                         
+                var isUser = false;
+                
                 var uID = users[u].userId;
+                
+                if (uID == userId) {
+                    isUser = true;
+                }
                 
                 followingUser = await checkU(uID);        
                                                 
                 if (followingUser) {
+                 
+                var tweetKeys = Object.keys(data[u]);
+                var tweetNum = 0;
                     
                 for (var t in data[u]) {
+                    
+                    var tKey = "hi";
+                    tKey = tweetKeys[tweetNum];
+                    
                     mytab = mytab + "<tr>";
                     var date = new Date(data[u][t].time);
                     var time = date.toString();
@@ -327,6 +371,9 @@ function sleep(seconds) {
                         mytab = mytab + "<td> <img class = 'zoom' src='" + data[u][t].img + "' width='" + imgWidth + "'>" + "<center>" + data[u][t].tweet + "</center>"  + "</td>";
                         mytab = mytab + "<td></td>";
                         mytab = mytab + "<td width='50px'>" + time + "</td>";
+                        if (isUser) {
+                            mytab = mytab + "<td></td><td><button onclick = 'deleteTweet(`" + tKey + "`)'>X</button></td>";
+                        }
                     } else if (data[u][t].vid != null && data[u][t].vid != "") {
                         if (profilePic) {
                         if (users[u].profile_picture2 == null) {
@@ -345,6 +392,9 @@ function sleep(seconds) {
                         mytab = mytab + "<td width='1px'> <center> <iframe width='" + imgWidth + "' src='" + data[u][t].vid + "'frameborder='0' allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture' allowfullscreen></iframe> <br>" + data[u][t].tweet + "</center>"  + "</td>";
                         mytab = mytab + "<td></td>";
                         mytab = mytab + "<td width='50px'>" + time + "</td>";
+                        if (isUser) {
+                            mytab = mytab + "<td></td><td><button onclick = 'deleteTweet(`" + tKey + "`)'>X</button></td>";
+                        }
                     } else {
                         if (profilePic) {
                         if (users[u].profile_picture2 == null) {
@@ -363,9 +413,12 @@ function sleep(seconds) {
                         mytab = mytab + "<td width='1px'>" + data[u][t].tweet + "</td>";
                         mytab = mytab + "<td></td>";
                         mytab = mytab + "<td width='50px'>" + time + "</td>";
-                                            
+                        if (isUser) {
+                            mytab = mytab + "<td></td><td><button onclick = 'deleteTweet(`" + tKey + "`)'>X</button></td>";
+                        }                  
                     }
                     mytab = mytab + "</tr>";
+                    tweetNum++;
                 }
             }
             }
@@ -375,7 +428,7 @@ function sleep(seconds) {
             //mytdiv.innerHTML = mylist;
             mytdiv.innerHTML = mytab;
             if (!followingAnyone) {
-                document.getElementById("notFolliwng").innerHTML = "You're not following anyone; search for users to follow in the <b>search</b> tab.";
+                document.getElementById("notFollowing").innerHTML = "You're not following anyone; search for users to follow in the <b>search</b> tab. <br><br> <hr>";
             }
             //alert(mytab);
             
@@ -487,7 +540,7 @@ function sleep(seconds) {
 </div>
         
         <br>
-        
+                      
         <button id = "signin" onclick="signin()">Sign in</button>
         <button id = "signout"onclick="signout()">Sign out</button>
                

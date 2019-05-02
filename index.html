@@ -226,9 +226,6 @@
                 profile_picture : imageUrl,
                 userId: userId
             });
-            firebase.database().ref('users/' + userId + '/followers').push({
-                user: name
-            });
         }
         
 function sleep(seconds) {

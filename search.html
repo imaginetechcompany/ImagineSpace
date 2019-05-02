@@ -436,6 +436,9 @@ Search: <input type="text" id="inputName"> <button id = "submit" onclick="Submit
                 
             for (var u in users) {
                 if (users[u].username == searchedUser || users[u].username2 == searchedUser) {
+                    if (users[u].userId == userId) {
+                        alert("You can't follow yourself");
+                    } else {
                     var xyz = 0;
                     var xyzBool = false;
                     for (var u2 in users[u].followers) {
@@ -456,6 +459,7 @@ Search: <input type="text" id="inputName"> <button id = "submit" onclick="Submit
                         });
                     }
                 }
+                }
             }
                 
             alert("You are now following " + searchedUser);
@@ -468,6 +472,7 @@ Search: <input type="text" id="inputName"> <button id = "submit" onclick="Submit
         }
         
         function unfollow() {
+            
             if (signedIn) {
             
             firebase.database().ref('/users').once('value').then(function(snapshot) { 
@@ -480,6 +485,9 @@ Search: <input type="text" id="inputName"> <button id = "submit" onclick="Submit
                 
             for (var u in users) {
                 if (users[u].username == searchedUser || users[u].username2 == searchedUser) {
+                    if (users[u].userId == userId) {
+                        alert("You can't unfollow yourself");
+                    } else {
                     for (var u2 in users[u].followers) {
                         xyz++;
                         if (users[u].followers[u2].user == name) {
@@ -488,6 +496,7 @@ Search: <input type="text" id="inputName"> <button id = "submit" onclick="Submit
                             });
                         }
                     }
+                }
                 }
             }
                 

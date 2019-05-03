@@ -442,7 +442,7 @@ function sleep(seconds) {
                     var xtraString = "";
                     
                     if (data[u][t].img != null && data[u][t].img != "") {
-                        mytab = mytab + "<td>";
+                        mytab = mytab + "<td width=24px>";
                             mytab = mytab + "<button class='noC' onclick = 'like(`" + uID + "`, `" + tKey + "` , `" + likeKey + "`)'>";
                         if (liked) {
                             mytab = mytab + "<img width=20px src = 'heart2.png' id = '" + tKey + "'>";
@@ -472,7 +472,7 @@ function sleep(seconds) {
                             mytab = mytab + "<td></td><td><button onclick = 'deleteTweet(`" + tKey + "`)'>X</button></td>";
                         }
                     } else if (data[u][t].vid != null && data[u][t].vid != "") {
-                        mytab = mytab + "<td>";
+                        mytab = mytab + "<td width=24px>";
                         mytab = mytab + "<button class='noC' onclick = 'like(`" + uID + "`, `" + tKey + "` , `" + likeKey + "`)'>";
                         if (liked) {
                             mytab = mytab + "<img width=20px src = 'heart2.png' id = '" + tKey + "'>";
@@ -502,7 +502,7 @@ function sleep(seconds) {
                             mytab = mytab + "<td></td><td><button onclick = 'deleteTweet(`" + tKey + "`)'>X</button></td>";
                         }
                     } else {
-                        mytab = mytab + "<td>";
+                        mytab = mytab + "<td width=24px>";
                         mytab = mytab + "<button class='noC' onclick = 'like(`" + uID + "`, `" + tKey + "` , `" + likeKey + "`)'>";
                         if (liked) {
                             mytab = mytab + "<img width=20px src = 'heart2.png' id = '" + tKey + "'>";

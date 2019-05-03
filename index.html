@@ -156,7 +156,7 @@
     
     if ( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
         tabWidth = 270;
-        imgWidth = 100;
+        imgWidth = 75;
         profilePic = false;
     }
         
@@ -346,19 +346,22 @@ function sleep(seconds) {
                     var lz = 0;
                     var likeKeys = [];
                     var ly = 0;
+                    var containtsLiker = false;
                     
                     //firebase.database().ref('tweets/' + uID + "/" + tKey + "/likers").remove();
-                    
-                    if (data[u][t].likers == null) {
                         
+                    for (var l in data[u][t].likers) {
+                        if (data[u][t].likers[l].user == name) {
+                            containtsLiker = true;  
+                        }
+                    }
+                    
+                    if (!containtsLiker) {
                         firebase.database().ref('tweets/' + uID + "/" + tKey + "/likers").push({
                             user: name,
                             liked: false
                         });
-                        
                     }
-                    
-                    if (data[u][t].likers != null) {
                     
                     likeKeys = Object.keys(data[u][t].likers);
                         
@@ -372,8 +375,6 @@ function sleep(seconds) {
                         }
                         lz++;
                     }
-                                            
-                    }
                     
                     if (likeKey == "") {
                         
@@ -385,13 +386,20 @@ function sleep(seconds) {
                         if (data[u][t].likers[l].user == name && data[u][t].likers[l].liked == true) {
                             liked = true;
                             likeKey = likeKeys[lz];
-                            ly++;
                         } else if (data[u][t].likers[l].user == name) {
                             likeKey = likeKeys[lz];
                         }
                         lz++;
                     }
                         
+                    }
+                    
+                    ly = 0;
+                    
+                    for (var l in data[u][t].likers) {
+                        if (data[u][t].likers[l].liked == true) {
+                            ly++;
+                        }
                     }
                     
                     var likes = ly;
@@ -653,6 +661,7 @@ function sleep(seconds) {
             } else {
             
             var tweetid = firebase.database().ref('tweets/' + userId + "/").push({tweet: nameValue, time: js_time, img: imgValue, vid: vidValue});
+                firebase.database().ref('tweets/' + userId + "/likers").push({user: name, liked: false});
             twitdoc.value = "";
             console.log("tweet written")
             

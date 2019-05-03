@@ -15,6 +15,22 @@
     
     
     <style>
+        
+        .noC {
+            border-radius: 0px;
+            border: none;
+            background-color: transparent;
+            transition: transform .25s;
+        }
+        
+        .noC:hover {
+            transform: scale(1.3);
+        }
+        
+        .noC:active {
+            transform: scale(1.5);
+        }
+        
         tr:hover {background-color: #f5f5f5;}
         th, td {
             border-bottom: 1px solid #ddd;
@@ -265,7 +281,7 @@ function sleep(seconds) {
             firebase.database().ref('/users/' + uID + '/followers').once('value').then(function(snapshot) { 
                 var userdata = (snapshot.val());
                 dataarray = [userdata];
-                console.log(dataarray);
+                //console.log(dataarray);
                            
                 users2 = dataarray[0];
                     
@@ -292,11 +308,14 @@ function sleep(seconds) {
             }
         }
         
+        var oneIn = false;
+            var twoIn = false;
+        
         async function updatetweets(data) {
             
             var followingUser = false;
             
-            var mytab = "<center><table width=" + tabWidth + ">";
+            var mytab = "<center><table id='mytable' width=" + tabWidth + ">";
             users = data[1]; // put on top, because changed data - not good coding change later
             data = data[0];
             
@@ -322,7 +341,61 @@ function sleep(seconds) {
                     var tKey = "hi";
                     tKey = tweetKeys[tweetNum];
                     
-                    mytab = mytab + "<tr>";
+                    var liked = false;
+                    var likeKey = "";
+                    var lz = 0;
+                    var likeKeys = [];
+                    var ly = 0;
+                    
+                    //firebase.database().ref('tweets/' + uID + "/" + tKey + "/likers").remove();
+                    
+                    if (data[u][t].likers == null) {
+                        
+                        firebase.database().ref('tweets/' + uID + "/" + tKey + "/likers").push({
+                            user: name,
+                            liked: false
+                        });
+                        
+                    }
+                    
+                    if (data[u][t].likers != null) {
+                    
+                    likeKeys = Object.keys(data[u][t].likers);
+                        
+                    for (var l in data[u][t].likers) {
+                        if (data[u][t].likers[l].user == name && data[u][t].likers[l].liked == true) {
+                            liked = true;
+                            likeKey = likeKeys[lz];
+                            ly++;
+                        } else if (data[u][t].likers[l].user == name) {
+                            likeKey = likeKeys[lz];
+                        }
+                        lz++;
+                    }
+                                            
+                    }
+                    
+                    if (likeKey == "") {
+                        
+                        liked = false;
+                        likeKey = "";
+                        lz = 0;
+                        
+                    for (var l in data[u][t].likers) {
+                        if (data[u][t].likers[l].user == name && data[u][t].likers[l].liked == true) {
+                            liked = true;
+                            likeKey = likeKeys[lz];
+                            ly++;
+                        } else if (data[u][t].likers[l].user == name) {
+                            likeKey = likeKeys[lz];
+                        }
+                        lz++;
+                    }
+                        
+                    }
+                    
+                    var likes = ly;
+                    
                     var date = new Date(data[u][t].time);
                     var time = date.toString();
                     if (time.substring(0,15) == loadDate.substring(0,15)) {
@@ -353,7 +426,21 @@ function sleep(seconds) {
                     } else {
                         time = time.substring(4,15);
                     }
+                    
+                    mytab = mytab + "<tr id = '" + data[u][t].time + "'>";
+                    
+                    var xtraString = "";
+                    
                     if (data[u][t].img != null && data[u][t].img != "") {
+                        mytab = mytab + "<td>";
+                            mytab = mytab + "<button class='noC' onclick = 'like(`" + uID + "`, `" + tKey + "` , `" + likeKey + "`)'>";
+                        if (liked) {
+                            mytab = mytab + "<img width=20px src = 'heart2.png' id = '" + tKey + "'>";
+                        } else {
+                            mytab = mytab + "<img width=20px src = 'heart1.png'  id = '" + tKey + "'>";
+                        }
+                        mytab = mytab + "</button>";
+                        mytab = mytab + "<center><div id='" + likeKey + "'>" + likes + "</div></center></td>";
                         if (profilePic) {
                         if (users[u].profile_picture2 == null) {
                             mytab = mytab + "<td><img class = 'zoom' src='" + users[u].profile_picture + "' width='70px'></td>";
@@ -375,6 +462,15 @@ function sleep(seconds) {
                             mytab = mytab + "<td></td><td><button onclick = 'deleteTweet(`" + tKey + "`)'>X</button></td>";
                         }
                     } else if (data[u][t].vid != null && data[u][t].vid != "") {
+                        mytab = mytab + "<td>";
+                        mytab = mytab + "<button class='noC' onclick = 'like(`" + uID + "`, `" + tKey + "` , `" + likeKey + "`)'>";
+                        if (liked) {
+                            mytab = mytab + "<img width=20px src = 'heart2.png' id = '" + tKey + "'>";
+                        } else {
+                            mytab = mytab + "<img width=20px src = 'heart1.png'  id = '" + tKey + "'>";
+                        }
+                        mytab = mytab + "</button>";
+                        mytab = mytab + "<center><div id='" + likeKey + "'>" + likes + "</div></center></td>";
                         if (profilePic) {
                         if (users[u].profile_picture2 == null) {
                             mytab = mytab + "<td><img class = 'zoom' src='" + users[u].profile_picture + "' width='70px'></td>";
@@ -396,6 +492,15 @@ function sleep(seconds) {
                             mytab = mytab + "<td></td><td><button onclick = 'deleteTweet(`" + tKey + "`)'>X</button></td>";
                         }
                     } else {
+                        mytab = mytab + "<td>";
+                        mytab = mytab + "<button class='noC' onclick = 'like(`" + uID + "`, `" + tKey + "` , `" + likeKey + "`)'>";
+                        if (liked) {
+                            mytab = mytab + "<img width=20px src = 'heart2.png' id = '" + tKey + "'>";
+                        } else {
+                            mytab = mytab + "<img width=20px src = 'heart1.png'  id = '" + tKey + "'>";
+                        }
+                        mytab = mytab + "</button>";
+                        mytab = mytab + "<center><div id='" + likeKey + "'>" + likes + "</div></center></td>";
                         if (profilePic) {
                         if (users[u].profile_picture2 == null) {
                             mytab = mytab + "<td><img class = 'zoom' src='" + users[u].profile_picture + "' width='70px'></td>";
@@ -423,7 +528,7 @@ function sleep(seconds) {
             }
             }
                         
-            mytab = mytab + "</table> </center>"
+            mytab = mytab + "</table> </center>";
             var mytdiv = document.getElementById("mytweets");
             //mytdiv.innerHTML = mylist;
             mytdiv.innerHTML = mytab;
@@ -433,6 +538,96 @@ function sleep(seconds) {
             //alert(mytab);
             
             //mylist = mylist + "</ul>";
+            
+            oneIn = false;
+            twoIn = false;
+            //reorder();
+        }
+        
+        function like(uID, tKey, likeKey) {
+            
+            firebase.database().ref('tweets/' + uID + "/" + tKey + "/likers/" + likeKey).once('value').then(function(snapshot) { 
+                    var data = (snapshot.val());    
+                    if (data.liked == true) {
+                            firebase.database().ref('tweets/' + uID + "/" + tKey + "/likers/" + likeKey).update({
+                                liked: false
+                            });
+                        document.getElementById(tKey).src = "heart1.png";
+                        
+                        var likes = document.getElementById(likeKey);
+                        likesNum = Number(likes.innerHTML);
+                        likesNum--;
+                        likes.innerHTML = likesNum;
+                        
+                        } else {
+                            firebase.database().ref('tweets/' + uID + "/" + tKey + "/likers/" + likeKey).update({
+                                liked: true
+                            });
+                            document.getElementById(tKey).src = "heart2.png";
+                            
+                            var likes = document.getElementById(likeKey);
+                        likesNum = Number(likes.innerHTML);
+                        likesNum++;
+                        likes.innerHTML = likesNum;
+                        }
+                      });
+            
+        }
+        
+        var rows2 = [];
+        
+        function reorder() {
+            
+            var mynewtab = "<center><table id='mytable' width=" + tabWidth + ">";
+            rows2 = [];
+            var table = document.getElementById("mytable");
+            var rows = table.rows;
+            console.log(rows);
+            for (i = 0; i < rows.length; i++) {
+                var theRow = rows[i];
+                var num = Number(rows[i].id);
+                if (!oneIn) {
+                    rows2[0] = theRow;
+                    oneIn = true;
+                } else if(!twoIn) {
+                    if (num < Number(rows2[0].id)) {
+                        rows[1] = theRow;
+                    } else {
+                        rows2[1] = rows2[0];
+                        rows2[0] = theRow;
+                    }
+                    twoIn = true;
+                } else {
+                for (i2 = 0; i2 < rows2.length; i2++) {
+                    if (i2 == 0) {
+                        if (num > Number(rows2[0].id)) {
+                            rows2.splice(0,0,theRow);
+                        }
+                    } else if (i2 == rows2.length - 1) {
+                        if (num < Number(rows2[i2].id)) {
+                            rows[rows2.length] = theRow;
+                        }
+                    } else {
+                        if (num > Number(rows2[i2]).id && num < Number(rows2[i2+1]).id) {
+                            rows2.splice(i2+1, 0, theRow);
+                        }
+                    }
+                }
+                }
+            }
+                                
+            console.log(rows2);
+            
+            mynewtab = mynewtab + rows2;
+            
+            mynewtab = mynewtab + "</table> </center>";
+            var mytdiv = document.getElementById("mytweets");
+            //mytdiv.innerHTML = mylist;
+            mytdiv.innerHTML = mynewtab;
+            if (!followingAnyone) {
+                document.getElementById("notFollowing").innerHTML = "You're not following anyone; search for users to follow in the <b>search</b> tab. <br><br> <hr>";
+            }
+            
         }
         
         function doNothing() {}

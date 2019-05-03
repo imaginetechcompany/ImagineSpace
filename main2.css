@@ -62,7 +62,7 @@ samp {
 }
 
 img {
-    animation: colorize 2s cubic-bezier(0, 0, .78, .36) 1;
+    animation: colorize 1.3s cubic-bezier(0, 0, .78, .36) 1;
     background: transparent;
     border: 5px solid rgba(0, 0, 0, 0.12);
     border-radius: 2px;

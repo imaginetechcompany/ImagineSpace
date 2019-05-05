@@ -311,7 +311,6 @@ function sleep(seconds) {
         
         function deleteTweet(ref) {
             if(confirm("Are you sure you want to delete this tweet? Hit OK to continue or cancel to stop.")) {
-                alert("tweets/" + userId + "/" + ref);
                 firebase.database().ref("tweets/" + userId + "/" + ref).remove();
             }
         }
@@ -369,9 +368,10 @@ function sleep(seconds) {
                             user: name,
                             liked: false
                         });
+                        likeKeys = Object.keys(data[u][t].likers);
+                    } else {
+                        likeKeys = Object.keys(data[u][t].likers);
                     }
-                    
-                    likeKeys = Object.keys(data[u][t].likers);
                         
                     for (var l in data[u][t].likers) {
                         if (data[u][t].likers[l].user == name && data[u][t].likers[l].liked == true) {
@@ -443,8 +443,20 @@ function sleep(seconds) {
                         time = time.substring(4,15);
                     }
                     
-                    mytab = mytab + "<tr id = '" + data[u][t].time + "'>";
-                    
+                    if (data[u][t].mood == "None" || data[u][t].mood == null) {
+                        mytab = mytab + "<tr id = '" + data[u][t].time + "'>";
+                    } else {
+                        if (data[u][t].mood == "Happy") {
+                            mytab = mytab + "<tr style='background-color: greenyellow' id = '" + data[u][t].time + "'>";
+                        } else if (data[u][t].mood == "Angry") {
+                            mytab = mytab + "<tr style='background-color: indianred' id = '" + data[u][t].time + "'>";
+                        } else if (data[u][t].mood == "Sad") {
+                            mytab = mytab + "<tr style='background-color: skyblue' id = '" + data[u][t].time + "'>";
+                        } else if (data[u][t].mood == "Excited") {
+                            mytab = mytab + "<tr style='background-color: orange' id = '" + data[u][t].time + "'>";
+                        }
+                    }
+                        
                     var xtraString = "";
                     
                     if (data[u][t].img != null && data[u][t].img != "") {
@@ -466,9 +478,9 @@ function sleep(seconds) {
                         }
                         mytab = mytab + "<td></td>";
                         if (users[u].username2 == null) {
-                            mytab = mytab + "<td width='" + uNameWidth + "'px style= 'word-break: break-word'> <center>" + users[u].username + "</center> </td>";
+                            mytab = mytab + "<td width='" + uNameWidth + "'px> <center>" + users[u].username + "</center> </td>";
                         } else {
-                            mytab = mytab + "<td width='" + uNameWidth + "'px style= 'word-break: break-word'> <center>" + users[u].username2 + "</center> </td>";
+                            mytab = mytab + "<td width='" + uNameWidth + "'px> <center>" + users[u].username2 + "</center> </td>";
                         }
                         mytab = mytab + "<td></td>";
                         mytab = mytab + "<td> <img class = 'zoom' src='" + data[u][t].img + "' width='" + imgWidth + "'>" + "<center>" + data[u][t].tweet + "</center>"  + "</td>";
@@ -496,9 +508,9 @@ function sleep(seconds) {
                         }
                         mytab = mytab + "<td></td>";
                         if (users[u].username2 == null) {
-                            mytab = mytab + "<td width='" + uNameWidth + "'px style= 'word-break: break-word'> <center>" + users[u].username + "</center> </td>";
+                            mytab = mytab + "<td width='" + uNameWidth + "'px> <center>" + users[u].username + "</center> </td>";
                         } else {
-                            mytab = mytab + "<td width='" + uNameWidth + "'px style= 'word-break: break-word'> <center>" + users[u].username2 + "</center> </td>";
+                            mytab = mytab + "<td width='" + uNameWidth + "'px> <center>" + users[u].username2 + "</center> </td>";
                         }
                         mytab = mytab + "<td></td>";
                         mytab = mytab + "<td width='1px'> <center> <iframe width='" + imgWidth + "' src='" + data[u][t].vid + "'frameborder='0' allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture' allowfullscreen></iframe> <br>" + data[u][t].tweet + "</center>"  + "</td>";
@@ -526,9 +538,9 @@ function sleep(seconds) {
                         }
                         mytab = mytab + "<td></td>";
                         if (users[u].username2 == null) {
-                            mytab = mytab + "<td width='" + uNameWidth + "'px style= 'word-break: break-word'> <center>" + users[u].username + "</center> </td>";
+                            mytab = mytab + "<td width='" + uNameWidth + "'px> <center>" + users[u].username + "</center> </td>";
                         } else {
-                            mytab = mytab + "<td width='" + uNameWidth + "'px style= 'word-break: break-word'> <center>" + users[u].username2 + "</center> </td>";
+                            mytab = mytab + "<td width='" + uNameWidth + "'px> <center>" + users[u].username2 + "</center> </td>";
                         }
                         mytab = mytab + "<td></td>";
                         mytab = mytab + "<td width='1px'>" + data[u][t].tweet + "</td>";
@@ -662,6 +674,7 @@ function sleep(seconds) {
             var nameValue = twitdoc.value;
             var imgValue = twitimg.innerHTML;
             var vidValue = twitvid.value;
+            var moodValue = document.getElementById("moodPick").value;
             var js_time = Date.now();
             
             if (nameValue.length > 140) {
@@ -672,8 +685,19 @@ function sleep(seconds) {
                 alert("You can only post one of the following: image, video");
             } else {
             
-            var tweetid = firebase.database().ref('tweets/' + userId + "/").push({tweet: nameValue, time: js_time, img: imgValue, vid: vidValue});
-                firebase.database().ref('tweets/' + userId + "/likers").push({user: name, liked: false});
+            var tweetid = firebase.database().ref('tweets/' + userId + "/").push({tweet: nameValue, time: js_time, img: imgValue, vid: vidValue, mood: moodValue});
+            
+            var neededKey = "";
+            firebase.database().ref('tweets/' + userId).once('value').then(function(snapshot) { 
+            var data = (snapshot.val()); 
+                var counter = -1;
+                var keysK = Object.keys(data);
+                for (var c in data) {
+                    counter++;
+                }
+                neededKey = keysK[counter];
+            });
+                
             twitdoc.value = "";
             console.log("tweet written")
             
@@ -767,6 +791,17 @@ function sleep(seconds) {
             <textarea id="twit" type="text" name="thetweet" cols="100" rows="4"></textarea>
         </form> 
         <button id = "submit" type="button" onclick="tweet()">Submit</button> <button id= "reload" onclick='reLoad()' style="float: right;">Reload posts</button>
+        
+        <br><br>
+        
+        Mood:
+        <br><select id="moodPick">
+            <option value="None" selected>None</option>
+            <option value="Happy">Happy</option>
+            <option value="Excited">Excited</option>
+            <option value="Angry">Angry</option>
+            <option value="Sad">Sad</option>
+        </select>
     
         <br><br>
         

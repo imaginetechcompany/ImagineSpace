@@ -390,7 +390,19 @@
                     var tKey = "hi";
                     tKey = tweetKeys[tweetNum];
                     
-                    mytab = mytab + "<tr>";
+                    if (data[u][t].mood == "None" || data[u][t].mood == null) {
+                        mytab = mytab + "<tr id = '" + data[u][t].time + "'>";
+                    } else {
+                        if (data[u][t].mood == "Happy") {
+                            mytab = mytab + "<tr style='background-color: greenyellow' id = '" + data[u][t].time + "'>";
+                        } else if (data[u][t].mood == "Angry") {
+                            mytab = mytab + "<tr style='background-color: indianred' id = '" + data[u][t].time + "'>";
+                        } else if (data[u][t].mood == "Sad") {
+                            mytab = mytab + "<tr style='background-color: skyblue' id = '" + data[u][t].time + "'>";
+                        } else if (data[u][t].mood == "Excited") {
+                            mytab = mytab + "<tr style='background-color: orange' id = '" + data[u][t].time + "'>";
+                        }
+                    }
                     var date = new Date(data[u][t].time);
                     var time = date.toString();
                     if (time.substring(0,15) == loadDate.substring(0,15)) {

@@ -162,28 +162,12 @@
                 
                 // write data to document
                 mydiv = document.getElementById("mydata");
-                mydiv.innerHTML = name
+                mydiv.innerHTML = name;
                 myphotodiv = document.getElementById("myphoto");
                 myphotodiv.innerHTML = "<img src='" + imageUrl + "'/>";
 
-                firebase.database().ref('/tweets').once('value').then(function(snapshot) {
-                    var data = (snapshot.val());
-                    if (data == null) {
-                      console.log("No data found at /tweets/" + userId);  
-                    } else {
-                        
-                      firebase.database().ref('/users').once('value').then(function(snapshot) { 
-                        var userdata = (snapshot.val());
-                        if (userdata != null) {
-                           dataarray = [data,userdata]
-                           console.log(dataarray)
-                           updatetweets(dataarray); 
-                        }
-                      });
-                      //console.log(data)
-                      //updatetweets(data);
-                    }
-                });
+                updateBigBoard();
+                
             } // end user null check
         }); // end check auth state
     
@@ -194,6 +178,120 @@
                 profile_picture : imageUrl,
                 userId: userId
             });
+    }
+    
+    var userChats = [];
+    var mytab = "";
+    var chatKey = "";
+    
+    function updateBigBoard() {
+        
+        mytab = "";
+        
+        firebase.database().ref('/private').once('value').then(function(snapshot) { 
+            
+            var data = (snapshot.val());
+            
+            var chatCount = 0;
+            var chatKeys = Object.keys(data);
+            
+            for (var c in data) {
+                for (var u in data[c].users) {
+                    if (data[c].users[u].user == name) {
+                        userChats.push(chatKeys[chatCount]);
+                    }
+                }
+                chatCount++;
+            }
+            
+            mytab = mytab + "<table>";
+            
+            for (var i = 0; i < userChats.length; i++) {
+                
+                chatKey = userChats[i];
+                mytab = mytab + "<tr onclick = 'enlarge(`" + chatKey + "`)'>";
+                var otherUser = "";
+                for (var u in data[chatKey].users) {
+                    if (data[chatKey].users[u].user != name) {
+                        otherUser = data[chatKey].users[u].user;
+                    }
+                }
+                var lastTweet = "";
+                var lastTweeter = "";
+                var tCount = 0;
+                for (var t in data[chatKey].tweets) {
+                    tCount++;
+                }
+                
+                var newTcount = 0;
+                for (var t in data[chatKey].tweets) {
+                    newTcount++;
+                    if (newTcount == tCount) {
+                        lastTweet = data[chatKey].tweets[t].message;
+                        lastTweeter = data[chatKey].tweets[t].user;
+                    }
+                }
+                
+                mytab = mytab + "<td>" + otherUser + "</td>";
+                mytab = mytab + "<td></td><td>|</td><td></td>";
+                mytab = mytab + "<td>" + lastTweet + " - " + lastTweeter + "</td>";
+                
+                mytab = mytab + "</tr>";
+                
+            }
+            
+            mytab = mytab + "</table>";
+            document.getElementById("bigTable").innerHTML = mytab;
+            
+        });
+        
+    }
+    
+    function enlarge(KEY) {
+        
+        chatKey = KEY;
+        
+        firebase.database().ref('/private/' + chatKey).once('value').then(function(snapshot) { 
+                        
+            var data = (snapshot.val());
+            
+            var otherUser = "";
+                for (var u in data.users) {
+                    if (data.users[u].user != name) {
+                        otherUser = data.users[u].user;
+                }
+            }
+            
+            mytab = otherUser;
+            mytab = mytab + "<br><br>";
+            mytab = mytab + "<table>";
+            
+            data = data["tweets"];
+            
+            for (var t in data) {
+                mytab = mytab + "<tr>";
+                mytab = mytab + "<td>" + data[t].message + "</td>";
+                mytab = mytab + "<td></td><td>|</td><td></td>";
+                mytab = mytab + "<td>" + data[t].user + "</td>";
+                mytab = mytab + "</tr>";
+            }
+            
+            mytab = mytab + "</table>";
+            var textArea = "<br><br>Message:<br><textarea id='twit' type='text' name='thetweet' cols='100' rows='4'></textarea><br><button onclick = 'message()'>Send</button>";
+            document.getElementById("bigTable").innerHTML = mytab;
+            document.getElementById("bigDiv").innerHTML = document.getElementById("bigDiv").innerHTML + textArea;
+            
+        });
+        
+    }
+    
+    function message() {
+        var message = document.getElementById("twit").value;
+        firebase.database().ref('private/' + chatKey + "/tweets").push({
+            user: name,
+            message: message
+        });
+        enlarge(chatKey);
     }
     
 </script>
@@ -216,9 +314,18 @@
         <button id = "signin" onclick="signin()">Sign in</button>
         <button id = "signout"onclick="signout()">Sign out</button>
                
-        <br> <br>
-        
+        <br><br><hr><br>
     
+        <div id = "bigDiv">
+        <div id = "bigTable" style="width:800px; height:300px; overflow:auto;"></div>
+        </div>
+            
+        <br><br><hr><br>
+    
+        <center>
+        <div id="mydata"></div>
+        <div id="myphoto"></div>
+        </center>
 
 
 </html>

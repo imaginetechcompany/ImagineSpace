@@ -200,7 +200,16 @@
                 
                 // write data to document
                 mydiv = document.getElementById("mydata");
-                mydiv.innerHTML = name
+                
+                firebase.database().ref('/users/' + userId + "/rewards").once('value').then(function(snapshot) { 
+                
+                    var data = (snapshot.val());
+                    
+                    console.log(data);
+                    mydiv.innerHTML = name + " | " + data.title;
+                    
+                });
+                
                 myphotodiv = document.getElementById("myphoto");
                 myphotodiv.innerHTML = "<img src='" + imageUrl + "'/>";
 
@@ -253,6 +262,15 @@
                 userId: userId
             });
             
+            firebase.database().ref('/users/' + userId + "/rewards").once('value').then(function(snapshot) { 
+                var data = (snapshot.val());
+                    if (data == null) {
+                        firebase.database().ref('users/' + userId + "/rewards").update({
+                            points: 0,
+                            title: "Beginner"
+                        });
+                    }
+            });
             
             firebase.database().ref('/users').once('value').then(function(snapshot) { 
             var userdata = (snapshot.val());
@@ -815,7 +833,7 @@ function sleep(seconds) {
         <br><br>
         
         Image:
-        <br><input id="inputFileToLoad" type="file" onchange="encodeImageFileAsURL();" />
+        <br><input id="inputFileToLoad" type="file" accept=".jpg,.jpeg,.png" onchange="encodeImageFileAsURL();" />
         <div id="imgTest" style="display:none;"></div>
         
         <br><br>

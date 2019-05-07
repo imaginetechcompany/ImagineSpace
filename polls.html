@@ -189,6 +189,8 @@
                 myphotodiv = document.getElementById("myphoto");
                 myphotodiv.innerHTML = "<img src='" + imageUrl + "'/>";
                 
+                doubleVoteEnabled = false;
+                
                 firebase.database().ref('/polls').once('value').then(function(snapshot) {
                     var data = (snapshot.val());
                     if (data == null) {
@@ -217,12 +219,14 @@
             firebase.auth().signInWithRedirect(provider).then(function(result) { 
                 window.location.replace("fbtest.html");
             });
+            doubleVoteEnabled = false;
         }
         
         function signout() {
             console.log("Signing out");
             firebase.auth().signOut().then(function() {
             });
+            doubleVoteEnabled = false;
         }  
             
         firebase.database().ref('/users').once('value').then(function(snapshot) { 
@@ -266,44 +270,62 @@
             document.getElementById("numInput").value;
         }
     
+        var doubleVoteEnabled = false;
+    
         function checkVote() {
             
             voteAllowed = true;
             var todayAdded = false;
+            var doubleVote = false;
             
             var today = new Date().toString();
             today = today.substring(4,15);
+            
+            firebase.database().ref('/shop/features/voting/users').once('value').then(function(snapshot) { 
+                    var users = (snapshot.val());
+                    for (var u in users) {
+                        if (users[u].user == name) {
+                            doubleVote = true;
+                        }
+                    }
             
             firebase.database().ref('/polls/days').once('value').then(function(snapshot) { 
             var userdata = (snapshot.val());
             dataarray = [userdata]
                            
             polls = dataarray[0]; // put on top, because changed data - not good coding change later
-              
+                
+                var votesToday = 0;
+                
                     for (var d in polls) {
                         if (polls[d].date == today) {
                             todayAdded = true;
-                            for (var u in polls[d]) {
-                                if (polls[d][u].name == name) {
-                                    voteAllowed = false;
+                            for (var u in polls[d].users) {
+                                if (polls[d].users[u].name == name) {
+                                    votesToday++;
                                 }
                             }
+                            if (doubleVote && votesToday > 1) {
+                                voteAllowed = false;
+                            } else if (!doubleVote && votesToday > 0) {
+                                voteAllowed = false;
+                            }
                             if (voteAllowed) {
-                                firebase.database().ref('polls/days/' + today).push({
+                                firebase.database().ref('polls/days/' + today + "/users").push({
                                 name
-                                }); 
+                                });
                             }
                         }
-                    if (!todayAdded) {
-                            firebase.database().ref('polls/days/' + today).push({
-                            name
-                        });  
+                    }
+                
+                if (!todayAdded) {
+                        firebase.database().ref('polls/days/' + today + "/users").push({
+                                name
+                                });
                         firebase.database().ref('polls/days/' + today).update({
                             date: today
                         });
                     }
-                        
-            }
                     
                 if (!voteAllowed) {
                     alert("You have already voted today.");
@@ -312,13 +334,15 @@
                 submitPoll();
                 
             });
+                
+            });
             
         }
     
     function submitPoll() {
             
         if (voteAllowed) {
-        
+                    
         var votePollNum = document.getElementById("pollNum").value;
         var Like = true;
         if (document.getElementById("DL").checked) {
@@ -346,12 +370,70 @@
                     }
                 }
             }
+            
+            alert("Your vote has been heard");
                         
         });
             
+            firebase.database().ref('/polls/days').once('value').then(function(snapshot) { 
+                        var data = (snapshot.val());
+                
+                var dayCount = 0;
+                
+                for (var d in data) {
+                    dayCount++;
+                }
+                
+                var dayCount2 = 0;
+                var voteCounter2 = 0;
+                
+                if (dayCount > 6) {
+                
+                for (var d in data) {
+                    dayCount2++;
+                    if (dayCount2 > (dayCount - 7)) {
+                        for (var u in data[d].users) {
+                            if (data[d].users[u].name == name) {
+                                voteCounter2++;
+                            }
+                        }
+                    }
+                }
+                
+                }
+                
+                if (voteCounter2 == 7) {
+                    doubleVoteEnabled = true;
+                }
+                
+            firebase.database().ref('shop/features/voting/users').once('value').then(function(snapshot) { 
+                var data = (snapshot.val());
+                    for (var u in data) {
+                        if (data[u].user == name) {
+                            doubleVoteEnabled = false;
+                        }
+                    }
+            });
+                
+                if (doubleVoteEnabled) {
+                alert("Congratualations! You have voted for the last 7 days in a row - you have earned the ability to vote twice in one day and 3 Imagine Points.");
+                    firebase.database().ref('shop/features/voting/users').push({
+                            user: name
+                        });
+                    
+            firebase.database().ref('/users/' + userId + "/rewards").once('value').then(function(snapshot) { 
+                var data = (snapshot.val());
+                    var newPoints = Number(data.points) + 3;
+                    firebase.database().ref('/users/' + userId + "/rewards").update({
+                    points: newPoints
+                });
+            });
+                    
+            }
+                
+                      });
+            
         }
-        
-        alert("Your vote has been heard");
         
     }
     

@@ -213,6 +213,7 @@ Search: <input type="text" id="inputName"> <button id = "submit" onclick="Submit
             var infoUname = "";
             var infoBio = "";
             var infoPic = "";
+            var infoTitle = "changethis";
             
             var userFound = false;
             
@@ -227,7 +228,10 @@ Search: <input type="text" id="inputName"> <button id = "submit" onclick="Submit
                 for (var u in users) {
                     if (user == users[u].email || user == users[u].username || user == users[u].username2) {
                         userFound = true;
-                        if (users[u].username2 != null) {
+                        followers = [];
+                        var uID2 = users[u].userId;
+                                
+                            if (users[u].username2 != null) {
                                 infoUname = users[u].username2;
                             } else {
                                 infoUname = users[u].username;
@@ -243,19 +247,27 @@ Search: <input type="text" id="inputName"> <button id = "submit" onclick="Submit
                                 infoPic = users[u].profile_picture;
                             }
                             for (var x in users[u].followers) {
-                                var alreadyAdded = false;
-                                for (i = 0; i < followers.length; i++) {
-                                    if (followers[i] == users[u].followers[x].user) {
-                                        alreadyAdded = true;
-                                    }
-                                }
-                                if (!alreadyAdded && users[u].followers[x].following == true) {
-                                    followers[followers.length] = users[u].followers[x].user;
+                                if (users[u].followers[x].user != users[u].username && users[u].followers[x].following == true) {
+                                    followers.push(users[u].followers[x].user);
                                 }
                             }
-                            document.getElementById("profileArea").innerHTML = "<center><h4>Username:</h4>" + infoUname + " <br><br> <h4>Followers: </h4>" + (followers.length - 1).toString() + " <br><br> <h4>Bio: </h4>" + infoBio + " <br><br> <h4>Profile Pic: </h4><img src = '" + infoPic + "' width = 444px></center>";
-                            searchedUser = users[u].username;
-                            searchedU2 = users[u].username2;
+                        
+                        firebase.database().ref('/users/' + uID2 + '/rewards/').once('value').then(function(snapshot) { 
+                            var data = (snapshot.val());
+                            if (data != null) {
+                            infoTitle = data.title;
+                                if (infoTitle == "") {
+                                    infoTitle = "Beginner";
+                                }
+                            } else {
+                                infoTitle = "Beginner";
+                            }
+                            
+                        
+                            document.getElementById("profileArea").innerHTML = "<center><h4>Username:</h4>" + infoUname + "<br> <h4>Title:</h4>" + infoTitle + " <br><br> <h4>Followers: </h4>" + (followers.length).toString() + " <br><br> <h4>Bio: </h4>" + infoBio + " <br><br> <h4>Profile Pic: </h4><img src = '" + infoPic + "' width = 444px></center>";
+                            searchedUser = user;
+                            
+                        });
                         
                     }
                 }
@@ -288,9 +300,7 @@ Search: <input type="text" id="inputName"> <button id = "submit" onclick="Submit
             
             var display = "<br>";
             for (i = 0; i < followers.length; i++) {
-                if (followers[i] != searchedU2 && followers[i] != searchedUser && followers[i] != "") {
-                    display = display + "-  " + followers[i] + "<br>";
-                }
+                display = display + "-  " + followers[i] + "<br>";
             }
             document.getElementById("followersArea").innerHTML = display;
         }
@@ -319,9 +329,9 @@ Search: <input type="text" id="inputName"> <button id = "submit" onclick="Submit
             data = dataarray[0];
             
             for (var u in data) {
-                                                                                                     
+                                 
                 if (users[u].username == searchedUser || users[u].username2 == searchedUser) {
-                    
+                                        
                 for (var t in data[u]) {
                     if (data[u][t].mood == "None" || data[u][t].mood == null) {
                         mytab = mytab + "<tr id = '" + data[u][t].time + "'>";

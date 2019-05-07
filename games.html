@@ -7,7 +7,96 @@
     <link href="main2.css" rel="stylesheet" type="text/css" />
     
     </head>
+    
+    <script src="https://www.gstatic.com/firebasejs/5.8.5/firebase.js"></script>
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
 
+    <style>
+    
+        #signin{
+            padding: 5px;
+            color: white;
+            background-color: green;
+            font-family: comic-sans;
+            font-size: 15px;
+        }
+        #signout{
+            padding: 5px;
+            color: white;
+            background-color: red;
+            font-family: comic-sans;
+            font-size: 15px;
+        }
+    
+    </style>
+    
+    <script>
+    
+        var config = {
+        apiKey: "AIzaSyAMXtT9JDwMNyxZabBYoRi0041-Rf1vDnY",
+        authDomain: "test-b8fc5.firebaseapp.com",
+        databaseURL: "https://test-b8fc5.firebaseio.com",
+        projectId: "test-b8fc5",
+        storageBucket: "test-b8fc5.appspot.com",
+        messagingSenderId: "6609833657"
+        };
+        firebase.initializeApp(config);
+                
+        firebase.auth().onAuthStateChanged(function(user) {
+            if (user == null) {
+                alert("Not logged in.");
+                return;
+            } else {
+                
+                loggedIn = true;
+                
+                userId = user.uid;
+                name = user.displayName;
+                imageUrl = user.photoURL;
+                email = user.email;
+                    
+                // write user data to users
+                writeUserData(userId, name, email, imageUrl);
+                // write data to document
+                mydiv = document.getElementById("mydata");
+                
+                firebase.database().ref('/users/' + userId + "/rewards").once('value').then(function(snapshot) { 
+                
+                    var data = (snapshot.val());
+                    
+                    console.log(data);
+                    mydiv.innerHTML = name + " | " + data.title;
+                    
+                });
+                
+                myphotodiv = document.getElementById("myphoto");
+                myphotodiv.innerHTML = "<img src='" + imageUrl + "'/>";
+
+            } // end user null check
+        }); // end check auth state
+    
+        function writeUserData(userId, name, email, imageUrl) {
+            firebase.database().ref('users/' + userId).update({
+                username: name,
+                email: email,
+                profile_picture : imageUrl,
+                userId: userId
+            });
+            
+            firebase.database().ref('/users/' + userId + "/rewards").once('value').then(function(snapshot) { 
+                var data = (snapshot.val());
+                    if (data == null) {
+                        firebase.database().ref('users/' + userId + "/rewards").update({
+                            points: 0,
+                            title: "Beginner"
+                        });
+                    }
+            });
+            
+        }
+        
+    </script>
+    
     <style>
 /* Style The Dropdown Button */
 .dropbtn {
@@ -78,8 +167,15 @@
     
     <center>
     
-    <br><br>
+    <br>
     
+    </center>
+        <button id = "signin" onclick="signin()">Sign in</button>
+        <button id = "signout"onclick="signout()">Sign out</button>
+        
+        <center>
+    <br>
+        
     <h1>Games</h1>
     
     <br><hr><br>
@@ -88,7 +184,7 @@
     
     <p>Use the WASD keys to move</p>
     
-<canvas style="border: 1px solid black" width="400" height="400" id="game"></canvas>
+    <canvas style='border: 1px solid black' width='400' height='400' id='game'></canvas>
         
         <br>
         
@@ -101,7 +197,7 @@
 <h3><div id="textArea">Welcome! Click on 'Start Game' to begin. (If the board isn't showing, reload)</div></h3>
 <p>Use the keyboard to select your spot.</p>
 <br>
-<canvas id="myCanvas" width=500px height=500px></canvas>
+<div id = "tictactoeDiv"><canvas id='myCanvas' width=500px height=500px></canvas></div>
 <br>
 <br>
 <button onclick="Game()">Start Game</button>
@@ -110,12 +206,36 @@
     You can press Start Game again to reset the board.</p>
 </center>
     
+    <br><hr><br>
+    
+    <center><div id="mydata"></div>
+    <div id="myphoto"></div></center>
+    
 <script>
+    
+    var tictactoeOk = false;
+    
+    var loggedIn = false;
     
     if ( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
         alert("Mobile not supported for this page");
         window.location = 'index.html';
     }
+    
+    firebase.database().ref('/shop/features/tictactoe/users').once('value').then(function(snapshot) { 
+        var data = (snapshot.val());
+        
+        for (var u in data) {
+            if (data[u].user == name) {
+                tictactoeOk = true;
+            }
+        }
+    
+    if (!tictactoeOk || !loggedIn) {
+        document.getElementById("tictactoeDiv").innerHTML = "<h3>Either you are not signed in or you have not bought this feature with Imagine Points.</h3>";    
+    }
+        
+    });
     
     var canvas = document.getElementById("myCanvas");
     var ctx = canvas.getContext("2d");  
@@ -240,6 +360,8 @@
     }
     
     function reDraw() {
+        
+        if (tictactoeOk && loggedIn) {
         
         if (currentPlayer == 1) {
             document.getElementById("textArea").innerHTML = "It's Player 1's turn."
@@ -413,6 +535,7 @@
             startGame = false;
         }
         
+    }
         
     }
     
@@ -522,9 +645,25 @@
     }
     
     
+    function signin() {
+            console.log("Signing in");
+            var provider = new firebase.auth.GoogleAuthProvider();
+            firebase.auth().signInWithRedirect(provider).then(function(result) { 
+                window.location.replace("fbtest.html");
+            });
+        }
+        
+        function signout() {
+            console.log("Signing out");
+            firebase.auth().signOut().then(function() {
+            });
+            loggedIn = false;
+        }
+    
 </script>
     
 <script>
+    
 var canvas2 = document.getElementById('game');
 var context = canvas2.getContext('2d');
 var grid = 16;
@@ -620,6 +759,16 @@ function loop() {
         apple.x = getRandomInt(0, 25) * grid;
         apple.y = getRandomInt(0, 25) * grid;
           prevScore = score;
+          if (prevScore > 44 && loggedIn) {
+              firebase.database().ref('/users/' + userId + "/rewards").once('value').then(function(snapshot) { 
+                var data = (snapshot.val());
+                    var newPoints = Number(data.points) + 1;
+                    firebase.database().ref('/users/' + userId + "/rewards").update({
+                    points: newPoints
+                });
+            });
+              alert("Congrats on your great score of " + prevScore + "! Since it was such a great score, we are awarding you 1 Imagine Point.");
+          }
           if (score > highScore) {
               highScore = score;
           }

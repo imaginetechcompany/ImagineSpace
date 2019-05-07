@@ -282,6 +282,8 @@
                 
                     for (var u in users) {
                         if (users[u].username == name) {
+                            var uID2 = users[u].userId;
+                                
                             if (users[u].username2 != null) {
                                 infoUname = users[u].username2;
                             } else {
@@ -289,6 +291,8 @@
                             }
                             if (users[u].bio != null) {
                                 infoBio = users[u].bio;
+                            } else {
+                                infoBio = "This user has not yet made a bio.";
                             }
                             if (users[u].profile_picture2 != null) {
                                 infoPic = users[u].profile_picture2;
@@ -302,18 +306,34 @@
                                         alreadyAdded = true;
                                     }
                                 }
-                                if (!alreadyAdded) {
+                                if (!alreadyAdded && users[u].followers[x].following == true) {
                                     followers[followers.length] = users[u].followers[x].user;
                                 }
                             }
-                            if (followers.length - 1 > 0) {
-                                showFollowersButton();
+                        
+                        firebase.database().ref('/users/' + uID2 + '/rewards/').once('value').then(function(snapshot) { 
+                            var data = (snapshot.val());
+                            if (data != null) {
+                            infoTitle = data.title;
+                                if (infoTitle == "") {
+                                    infoTitle = "Beginner";
+                                }
+                            } else {
+                                infoTitle = "Beginner";
                             }
-                            showTweetsButton();
-                            document.getElementById("YourProfile").innerHTML = "<center><h4>Username:</h4>" + infoUname + " <br><br> <h4>Followers: </h4>" + (followers.length - 1).toString() + " <br><br> <h4>Bio: </h4>" + infoBio + " <br><br> <h4>Profile Pic: </h4><img src = '" + infoPic + "' width = 444px></center>";
-                        }
+                            
+                        
+                            document.getElementById("YourProfile").innerHTML = "<center><h4>Username:</h4>" + infoUname + "<br> <h4>Title:</h4>" + infoTitle + " <br><br> <h4>Followers: </h4>" + (followers.length - 1).toString() + " <br><br> <h4>Bio: </h4>" + infoBio + " <br><br> <h4>Profile Pic: </h4><img src = '" + infoPic + "' width = 444px></center>";
+                            searchedUser = users[u].username;
+                            searchedU2 = users[u].username2;
+                            
+                        });
+                    }
                     }
                 
+                document.getElementById("sFbutton").style.display = "block";
+                document.getElementById("sTbutton").style.display = "block";
+                document.getElementById("xtraDiv").innerHTML = "<hr><br>";
                 
             });
         }

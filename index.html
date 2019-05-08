@@ -719,6 +719,34 @@ function sleep(seconds) {
                 neededKey = keysK[counter];
             });
                 
+            var date = new Date().toString();
+              today = date.substring(4,15);
+                
+            firebase.database().ref('shop/pointsUp/tweets/' + today).push({
+                user: name
+            });
+                
+            firebase.database().ref('shop/pointsUp/tweets/' + today).once('value').then(function(snapshot) {
+                    var data = (snapshot.val());
+                var uTcount = 0;
+                for (var u in data) {
+                    if (data[u].user == name) {
+                        uTcount++;
+                    }
+                }
+                if (uTcount == 1) {
+                    alert("You tweeted today, so we are rewarding you with 1 Imagine Point!");
+                    firebase.database().ref('/users/' + userId + "/rewards").once('value').then(function(snapshot) { 
+                        var data2 = (snapshot.val());
+                        var newPoints = Number(data2.points) + 1;
+                        firebase.database().ref('/users/' + userId + "/rewards").update({
+                            points: newPoints
+                        });
+                    });
+                }
+            });
+            
+                
             twitdoc.value = "";
             console.log("tweet written")
             

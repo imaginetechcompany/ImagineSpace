@@ -134,7 +134,8 @@
 <script>
     
     tabWidth = 802;
-        imgWidth = 250;
+        imgWidth = 300;
+    imgHeight = 210;
         profilePic = true;
         uNameWidth = 50;
         timeWidth1 = 102;
@@ -149,7 +150,8 @@
         
     if ( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
         tabWidth = 270;
-        imgWidth = 75;
+        imgWidth = 111;
+        imgHeight = 67;
         profilePic = false;
         uNameWidth = 48;
         timeWidth = 40;
@@ -257,13 +259,7 @@
                 }
                 var lastTweet = "";
                 var lastTweeter = "";
-                var tCount = 0;
-                for (var t in data[chatKey].tweets) {
-                    tCount++;
-                }
-                
                 var time = "";
-                var newTcount = 0;
                 
                 if (data[chatKey].tweets == null) {
                     
@@ -274,10 +270,11 @@
                 } else {
                 
                 for (var t in data[chatKey].tweets) {
-                    newTcount++;
-                    if (newTcount == tCount) {
-                        lastTweet = data[chatKey].tweets[t].message;
-                        lastTweeter = data[chatKey].tweets[t].user;
+                    
+                        if (data[chatKey].tweets[t].message != "") {
+                            lastTweet = data[chatKey].tweets[t].message;
+                            lastTweeter = data[chatKey].tweets[t].user;
+                        }
                         
                         var date = new Date(data[chatKey].tweets[t].date);
                     time = date.toString();
@@ -310,7 +307,6 @@
                         time = time.substring(4,15);
                     }
                         
-                    }
                 }
                 
                 mytab = mytab + "<td width = " + uName1W + "px>" + otherUsers + "</td>";
@@ -544,7 +540,11 @@
                     }
                 
                 mytab = mytab + "<tr height = 33px>";
+                if (data[t].img == "" || data[t].img == null) {
                 mytab = mytab + "<td width = " + tweetW + "px>" + data[t].message + "</td>";
+                } else {
+                mytab = mytab + "<td width = " + tweetW + "px><img max-width = " + imgWidth + "px height = " + imgHeight + "px src='" + data[t].img + "'>" + data[t].message + "</td>";
+                }
                 mytab = mytab + "<td></td>";
                 mytab = mytab + "<td width = " + uName2W + "px>" + data[t].user + "</td>";
                 mytab = mytab + "<td></td>";
@@ -553,7 +553,7 @@
             }
             
             mytab = mytab + "</table>";
-            var textArea = "<br>Message:<br><textarea id='twit' type='text' name='thetweet' cols='" + colsNum + "' rows='4'></textarea><br><button onclick = 'message()'>Send</button>";
+            var textArea = "<br>Message:<br><textarea id='twit' type='text' name='thetweet' cols='" + colsNum + "' rows='4'></textarea><br><br>Image: <br><input id='inputFileToLoad' type='file' accept='.jpg,.jpeg,.png' onchange='encodeImageFileAsURL();' /><div id='imgTest' style='display:none;'></div><br><br><button onclick = 'message()'>Send</button>";
             document.getElementById("bigTable").innerHTML = mytab;
             if (msgArea) {
                 document.getElementById("msgArea").innerHTML = textArea;
@@ -566,16 +566,42 @@
         
     }
     
+    function encodeImageFileAsURL() {
+
+            var filesSelected = document.getElementById("inputFileToLoad").files;
+            if (filesSelected.length > 0) {
+                var fileToLoad = filesSelected[0];
+                var fileReader = new FileReader();
+                fileReader.onload = function(fileLoadedEvent) {
+                    var srcData = fileLoadedEvent.target.result; // <--- data: base64
+                    //var newImage = document.createElement('img');
+                    //newImage.src = srcData;
+                    //document.getElementById("imgTest").innerHTML = newImage.outerHTML;
+                    document.getElementById("imgTest").innerHTML = srcData;
+                    //console.log("Converted Base64 version is: " + document.getElementById("imgTest").innerHTML);
+                    console.log(srcData);
+                }
+                fileReader.readAsDataURL(fileToLoad);
+            }
+        }
+    
     function message() {
         var message = document.getElementById("twit").value;
+        var img = document.getElementById("imgTest").innerHTML;
+        if (message == "" && img == "") {
+            alert("You must send a message, a photo, or both");
+        } else {
         var js_time = Date.now();
         firebase.database().ref('private/' + chatKey + "/tweets").push({
             user: name,
             message: message,
-            date: js_time
+            date: js_time,
+            img: img
         });
+        document.getElementById("imgTest").innerHTML = "";
         enlarge(chatKey, false);
         document.getElementById("twit").value = "";
+        }
     }
     
 </script>

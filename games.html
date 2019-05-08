@@ -761,14 +761,51 @@ function loop() {
         apple.y = getRandomInt(0, 25) * grid;
           prevScore = score;
           if (prevScore > 44 && loggedIn) {
+              var date = new Date().toString();
+              var userCheck = false;
+              today = date.substring(4,15);
+              firebase.database().ref('/shop/pointsUp/snake/').once('value').then(function(snapshot) { 
+                 var newdata = (snapshot.val());
+                  if (newdata[today] == null) {
+                        firebase.database().ref('/shop/pointsUp/snake/' + today).push({
+                            user: name
+                        });
+                      userCheck = true;
+                  }
+                  if (!userCheck) {
+                      firebase.database().ref('/shop/pointsUp/snake/' + today).push({
+                            user: name
+                        });
+                  }
+
+              firebase.database().ref('/shop/pointsUp/snake/' + today).once('value').then(function(snapshot) { 
+                var users = (snapshot.val());
+                  
+                  var userPcount = 0;
+                  
+                  for (var u in users) {
+                      if (users[u].user == name) {
+                          userPcount++;
+                      }
+                  }
+               
+                if (userPcount < 3) {
+                    
               firebase.database().ref('/users/' + userId + "/rewards").once('value').then(function(snapshot) { 
                 var data = (snapshot.val());
                     var newPoints = Number(data.points) + 1;
                     firebase.database().ref('/users/' + userId + "/rewards").update({
-                    points: newPoints
-                });
-            });
+                        points: newPoints
+                    });
+            
               alert("Congrats on your great score of " + prevScore + "! Since it was such a great score, we are awarding you 1 Imagine Point.");
+            });
+              } else {
+                  alert("Congrats on your great score of " + prevScore + "! But, since you have already gained 3 Imagine Points today from snake, you will not be rewarded any Points.");                   
+                }
+            });
+            });
+          
           }
           if (score > highScore) {
               highScore = score;
@@ -777,6 +814,7 @@ function loop() {
       }
     }
   });
+    
     
     document.getElementById('scoreDiv').innerHTML = "Score: " + score + " || Previous Score: " + prevScore + " || High Score: " + highScore;
     

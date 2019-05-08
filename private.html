@@ -151,7 +151,7 @@
     if ( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
         tabWidth = 270;
         imgWidth = 111;
-        imgHeight = 67;
+        imgHeight = 87;
         profilePic = false;
         uNameWidth = 48;
         timeWidth = 40;
@@ -323,7 +323,7 @@
             
             mytab = mytab + "</table>";
             
-            document.getElementById("msgArea").innerHTML = "<br><hr><br> <h3> New Chat: </h3> Users: <input type='text' id='newCusers'> <button onclick='addUser()'>Add User</button> <button onclick='reset()'>Reset</button> <br><br> <div id='usersAdded'></div> <br> <button class='button-xlarge' onclick='newChat()'>Start chat</button>";
+            document.getElementById("msgArea").innerHTML = "<br><hr><br> <h3> Open Chat: </h3> Users: <input type='text' id='newCusers'> <button onclick='addUser()'>Add User</button> <button onclick='reset()'>Reset</button> <br><br> <div id='usersAdded'></div> <br> <button class='button-xlarge' onclick='newChat()'>Start chat</button>";
             
             document.getElementById("bigTable").innerHTML = mytab;
             
@@ -343,9 +343,12 @@
             
             var data = (snapshot.val());
             var chatCheck = true;
+            var chatKEYS = Object.keys(data);
+            var chatKeyNum = 0;
             
             for (var c in data) {
                 
+                var thisChatKey = chatKEYS[chatKeyNum];
                 var usersInChat = [];
                 
                 for (var i = 0; i < newChatUsers.length; i++) {
@@ -370,10 +373,13 @@
                     chatCheck = false;
                 }
                 
+                chatKeyNum++;
+                
             }
             
             if (!chatCheck) {
                 alert("This chat already exists");
+                enlarge(thisChatKey, true);
             } else {
                 firebase.database().ref('private/').push({
                     changethis: true

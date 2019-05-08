@@ -279,7 +279,7 @@
                 
             for (var u in users) {
                 
-                if (users[u].email == email) {
+                if (users[u].username == name) {
 
                         firebase.database().ref('users/' + users[u].userId + "/followers/1/").update({
                             user: name,
@@ -313,10 +313,10 @@ function sleep(seconds) {
                 users2 = dataarray[0];
                     
                 for (var x in users2) {
-                    if (users2[x].user == name && uID != userId) {
+                    if (users2[x].user == name && uID != userId && users2[x].following == true) {
                         followingUser = true;
                         followingAnyone = true;
-                    } else if (users2[x].user == name) {
+                    } else if (users2[x].user == name && users2[x].following == true) {
                         followingUser = true;
                     }
                 }

@@ -348,12 +348,15 @@
                 document.getElementById("followersArea").style.display = "none";
             }
             
-            var display = "<br>";
+            var display = "<br><table><tr><td><b><h4>";
             for (i = 0; i < followers.length; i++) {
                 if (followers[i] != name) {
                     display = display + "-  " + followers[i] + "<br>";
                 }
             }
+            
+            display = display + "</h4></b></td></tr></table>";
+            
             document.getElementById("followersArea").innerHTML = display;
             
             showFcount++;
@@ -580,7 +583,10 @@
         <br><br>
         <hr>
         
-        <h2>Your profile:</h2>
+        <br>
+        <center><button class='button-xlarge' onclick='window.open(`leaders.html`, `_self`)'>Leaders</button></center>
+        <br>
+        <center><h2>Your profile:</h2></center><br>
         <div id="YourProfile"><center><div class='loader'></div> <br>
         <h3>Loading...</h3></center></div>
         

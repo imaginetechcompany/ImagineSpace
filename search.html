@@ -264,6 +264,16 @@ Search: <input type="text" id="inputName"> <button id = "submit" onclick="Submit
                                 infoTitle = "Beginner";
                             }
                             
+                    firebase.database().ref('/leaders/followers').once('value').then(function(snapshot) { 
+                var data = (snapshot.val());
+                var alltimehigh = data.followers;
+                if (followers.length > alltimehigh) {
+                firebase.database().ref('/leaders/followers').update({
+                    followers: followers.length,
+                    user: searchedUser
+                });
+                }
+                });
                         
                             document.getElementById("profileArea").innerHTML = "<center><h4>Username:</h4>" + infoUname + "<br> <h4>Title:</h4>" + infoTitle + " <br><br> <h4>Followers: </h4>" + (followers.length).toString() + " <br><br> <h4>Bio: </h4>" + infoBio + " <br><br> <h4>Profile Pic: </h4><img src = '" + infoPic + "' width = 444px></center>";
                             searchedUser = user;
@@ -299,10 +309,13 @@ Search: <input type="text" id="inputName"> <button id = "submit" onclick="Submit
             
             showFcount++;
             
-            var display = "<br>";
+            var display = "<br><table><tr><td><b><h4>";
             for (i = 0; i < followers.length; i++) {
                 display = display + "-  " + followers[i] + "<br>";
             }
+            
+            display = display + "</h4></b></td></tr></table>";
+            
             document.getElementById("followersArea").innerHTML = display;
         }
         
@@ -511,6 +524,8 @@ Search: <input type="text" id="inputName"> <button id = "submit" onclick="Submit
                 
             alert("You are now following " + searchedUser);
                 
+            SubmitUser();
+                
             });
                 
             } else {
@@ -548,6 +563,8 @@ Search: <input type="text" id="inputName"> <button id = "submit" onclick="Submit
             }
                 
             alert("You have unfollowed " + searchedUser);
+                
+            SubmitUser();
                 
             });
                 

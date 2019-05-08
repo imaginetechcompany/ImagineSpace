@@ -428,6 +428,21 @@
                     firebase.database().ref('/users/' + userId + "/rewards").update({
                     points: newPoints
                 });
+                newPoints = Number(data.pointsTotal) + 1;
+                        firebase.database().ref('/users/' + userId + "/rewards").update({
+                            pointsTotal: newPoints
+                        });
+                        firebase.database().ref('/leaders/pointsTotal').once('value').then(function(snapshot) { 
+                var data = (snapshot.val());
+                var alltimehigh = data.points;
+                if (newPoints > alltimehigh) {
+                firebase.database().ref('/leaders/pointsTotal').update({
+                    points: newPoints,
+                    user: name
+                });
+                    alert("You are now the all time leader in Total Points Earned!");
+                }
+                });
             });
                     
             }

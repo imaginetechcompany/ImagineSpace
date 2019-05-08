@@ -135,13 +135,13 @@
     
     var currentChat = "";
     var enlarged = false;
-    tabWidth = 802;
+    tabWidth = 812;
         imgWidth = 300;
     imgHeight = 210;
         profilePic = true;
         uNameWidth = 50;
-        timeWidth1 = 102;
-    timeWidth2 = 102;
+        timeWidth1 = 112;
+    timeWidth2 = 112;
         timeFont = 16;
     lastTweetW = 550;
     uName1W = 200;
@@ -160,8 +160,8 @@
         uName1W = 95;
         uName2W = 75;
         tweetW = 160;
-        timeWidth2 = 35
-        timeFont = 12
+        timeWidth2 = 35;
+        timeFont = 12;
         colsNum = 33;
         lastTweetW = 133;
         isMobile = true;
@@ -610,7 +610,9 @@
     function message() {
         var message = document.getElementById("twit").value;
         var img = document.getElementById("imgTest").innerHTML;
-        if (message == "" && img == "") {
+        if (message.length > 140) {
+            alert("Your message can't exceed 140 characters");
+        } else if (message == "" && img == "") {
             alert("You must send a message, a photo, or both");
         } else {
         var js_time = Date.now();
@@ -653,7 +655,7 @@
         <br><button onclick='reload()' style='float: right'>Reload</button><br><hr><br>
     
         <div id = 'smallDiv'></div>
-        <div id = "bigDiv" style='width:802px; height:280px; overflow-y:auto; overflow-x: hidden'>
+        <div id = "bigDiv" style='width:820px; height:280px; overflow-y:auto; overflow-x: hidden'>
         <div id = "bigTable"></div>
         </div>
         <div id = 'msgArea'></div>

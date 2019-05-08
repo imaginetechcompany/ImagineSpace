@@ -13,7 +13,6 @@
     <script src="https://apis.google.com/js/platform.js" async defer></script>
     
     
-    
     <style>
         
         .noC {
@@ -29,11 +28,6 @@
         
         .noC:active {
             transform: scale(1.5);
-        }
-        
-        tr:hover {background-color: #f5f5f5;}
-        th, td {
-            border-bottom: 1px solid #ddd;
         }
         
         #signin{
@@ -194,16 +188,14 @@
                 name = user.displayName;
                 imageUrl = user.photoURL;
                 email = user.email;
-                    
-                // write user data to users
                 
-                // write data to document
                 mydiv = document.getElementById("mydata");
                 
                 firebase.database().ref('/users/' + userId + "/rewards").once('value').then(function(snapshot) { 
                 
                     var data = (snapshot.val());
                     
+                    console.log(data);
                     mydiv.innerHTML = name + " | " + data.title;
                     
                 });
@@ -211,138 +203,32 @@
                 myphotodiv = document.getElementById("myphoto");
                 myphotodiv.innerHTML = "<img src='" + imageUrl + "'/>";
                 
-                updateInfo();
+                updateLeaders();
 
             } // end user null check
-        }); // end check auth state
+        });
         
-        var nextTitle = "N/A";
-        var nextTitleNum = 0;
-        var titleChangePoints = 0;
-        
-        var title = "";
-        var points = 0;
-        var pointsTotal = 0;
-        
-        function updateInfo() {
+        function updateLeaders() {
             
-            firebase.database().ref('/users/' + userId + "/rewards").once('value').then(function(snapshot) { 
+            firebase.database().ref('/leaders').once('value').then(function(snapshot) { 
                 
                 var data = (snapshot.val());
                     
-                title = data.title;
-                points = data.points;
-                pointsTotal = data.pointsTotal;
+                var snakeL = data.snake.user;
+                var snakeH = data.snake.highscore;
+                var followL = data.followers.user;
+                var followers = data.followers.followers;
+                var pointL = data.pointsTotal.user;
+                var points = data.pointsTotal.points;
                 
-                document.getElementById("yourInfo").innerHTML = "<center><button class='button-xlarge' onclick='window.open(`leaders.html`, `_self`)'>Leaders</button></center><h2>Your info:</h2><br>Your title: " + title + "<br><br>Your Imagine Points: " + points + "<br><br>Total Points earned: " + pointsTotal;
-                
-                firebase.database().ref('/shop/').once('value').then(function(snapshot) { 
-                
-                    var data = (snapshot.val());
-                    
-                    var titleNames = Object.getOwnPropertyNames(data.titles);
-                    titleNames.pop();
-                    for (var i = 0; i < titleNames.length; i++) {
-                        if (data.titles[i] == title && i != 6) {
-    
-                            nextTitleNum = i + 1;
-                            nextTitle = data.titles[i+1];
-                            
-                            if (i == 0 || i == 1 || i == 2) {
-                                titleChangePoints = i + 2;
-                            } else if (i == 3 || i == 4) {
-                                titleChangePoints = i + 3;
-                            } else {
-                                titleChangePoints = i + 5;
-                            }
-                            
-                        }
-                    }
-                    
-                    var TttUnlocked = false;
-                    var TictactoeUnlocked = "";
-                    
-                    for (var u in data.features.tictactoe.users) {
-                        if (data.features.tictactoe.users[u].user == name) {
-                           TttUnlocked = true; 
-                        }
-                    }
-                    
-                    if (TttUnlocked) {
-                        
-                        TictactoeUnlocked = "Unlocked";
-                        
-                    } else {
-                    
-                        TictactoeUnlocked = "Locked<br> Points Needed: 3<br><button onclick = 'unlockTictactoe()'>Reward</button>";
-                        
-                    }
-                    
-                    document.getElementById("shop").innerHTML = "<h2>Shop:</h2><br><h4>Title:</h4>Next Title [" + nextTitleNum + "]: " + nextTitle + "<br>Points Needed: " + titleChangePoints + "<br><button onclick = 'titleChange()'>Reward</button><br><br> <h4>Tictactoe:</h4>" + TictactoeUnlocked + "<br><br><h3>*More rewards coming soon*</h3>";
-                                        
-                });
+                document.getElementById("leaders").innerHTML = "<center><table><tr><td><h3>Total Points Earned:</h3>User: " + pointL + "<br>Points Earned: " + points + "<br><br><h3>Snake:</h3>User: " + snakeL + "<br>Highscore: " + snakeH + "<br><br><h3>Followers:</h3>User: " + followL + "<br>Followers: " + followers + "<br><br><br><button class='button-xlarge' onclick='window.open(`rewards.html`, `_self`)'>Rewards</button></td></tr></table></center>";
                     
             });
             
         }
         
-        function titleChange() {
-            
-            if (points >= titleChangePoints) {
-                
-                var titleChgCheck = confirm("Are you sure you want to change your title from '" + title + "' to '" + nextTitle + "' for " + titleChangePoints + " points?");
-                
-                if (titleChgCheck) {
-                
-                var newPoints = points - titleChangePoints;
-                
-                    firebase.database().ref('/users/' + userId + "/rewards").update({
-                        points: newPoints
-                    });
-                
-                    firebase.database().ref('/users/' + userId + "/rewards").update({
-                        title: nextTitle
-                    });
-                    
-                    updateInfo();
-                
-                }
-                
-            } else {
-                alert("You don't have enough points for this");
-            }
-            
-        }
-        
-        function unlockTictactoe() {
-            
-            if (points >= 3) {
-                
-                var titleChgCheck = confirm("Are you sure you want to unlock 'Tictactoe' for 3 points?");
-                
-                if (titleChgCheck) {
-                
-                var newPoints = points - 3;
-                
-                    firebase.database().ref('/users/' + userId + "/rewards").update({
-                        points: newPoints
-                    });
-                
-                    firebase.database().ref('/shop/features/tictactoe/users').push({
-                        user: name
-                    });
-                    
-                    updateInfo();
-                
-                }
-                
-            } else {
-                alert("You don't have enough points for this");
-            }
-            
-        }
-        
 </script>
+    
     
     <body>
         
@@ -364,19 +250,15 @@
         <br>
                       
         <button id = "signin" onclick="signin()">Sign in</button>
-        <button id = "signout" onclick="signout()">Sign out</button>
+        <button id = "signout"onclick="signout()">Sign out</button>
                
         <br> <br>
         
-        <center><h1>Rewards</h1></center>
+        <center><h1>Leaders</h1></center>
         
-        <br><hr><br>
+    <br> <hr> <br>
         
-        <div id ="yourInfo"></div>
-        
-        <br><hr><br>
-        
-        <div id = "shop"></div>
+    <div id='leaders'></div>
         
     <br> <hr> <br>
         
@@ -385,5 +267,6 @@
         
 
     </body>
+    
 
 </html>

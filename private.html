@@ -133,6 +133,8 @@
     
 <script>
     
+    var currentChat = "";
+    var enlarged = false;
     tabWidth = 802;
         imgWidth = 300;
     imgHeight = 210;
@@ -218,6 +220,8 @@
     
     function updateBigBoard() {
         
+        enlarged = false;
+        document.getElementById("bigTable").innerHTML = "<center><div class='loader'></div> <br> <h3>Loading...</h3></center>";
         loadDate = new Date().toString();
         
         document.getElementById("msgArea").innerHTML = "";
@@ -345,10 +349,10 @@
             var chatCheck = true;
             var chatKEYS = Object.keys(data);
             var chatKeyNum = 0;
+            var thisChatKey = "";
             
             for (var c in data) {
                 
-                var thisChatKey = chatKEYS[chatKeyNum];
                 var usersInChat = [];
                 
                 for (var i = 0; i < newChatUsers.length; i++) {
@@ -371,6 +375,7 @@
                 
                 if (usersInChat.length == 0 && !chatOk) {
                     chatCheck = false;
+                    thisChatKey = chatKEYS[chatKeyNum];
                 }
                 
                 chatKeyNum++;
@@ -480,9 +485,20 @@
         
     }
     
+    function reload() {
+        if (enlarged) {
+            enlarge(currentChat, false);
+        } else {
+            updateBigBoard();
+        }
+    }
+    
     function enlarge(KEY, msgA) {
         
+        currentChat = KEY;
+        enlarged = true;
         loadDate = new Date().toString();
+        document.getElementById("bigTable").innerHTML = "<center><div class='loader'></div> <br> <h3>Loading...</h3></center>";
         
         if (msgA) {
             msgArea = true;
@@ -634,7 +650,7 @@
                
         <br><br>
         <center><h2>Private Messaging</h2></center>
-        <br><hr><br>
+        <br><button onclick='reload()' style='float: right'>Reload</button><br><hr><br>
     
         <div id = 'smallDiv'></div>
         <div id = "bigDiv" style='width:802px; height:280px; overflow-y:auto; overflow-x: hidden'>

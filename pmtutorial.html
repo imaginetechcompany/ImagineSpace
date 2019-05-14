@@ -1,0 +1,698 @@
+<html>
+
+<head>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-site-verification" content="1dMM1Za6PMNj0zxB3LZcDotOBPao6C7jL0J4kVH3vJc" />
+    <title>ImagineSpace</title>
+    <link href="main2.css" rel="stylesheet" type="text/css" />
+    
+    </head>
+    
+    <script src="https://www.gstatic.com/firebasejs/5.8.5/firebase.js"></script>
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    
+    <style>
+        
+        .noC {
+            border-radius: 0px;
+            border: none;
+            background-color: transparent;
+            transition: transform .25s;
+        }
+        
+        .noC:hover {
+            transform: scale(1.3);
+        }
+        
+        .noC:active {
+            transform: scale(1.5);
+        }
+        
+        tr:hover {background-color: #f5f5f5;}
+        th, td {
+            border-bottom: 1px solid #ddd;
+        }
+        
+        #signin{
+            padding: 5px;
+            color: white;
+            background-color: green;
+            font-family: comic-sans;
+            font-size: 15px;
+        }
+        #signout{
+            padding: 5px;
+            color: white;
+            background-color: red;
+            font-family: comic-sans;
+            font-size: 15px;
+        }
+        #submit{
+            padding: 5px;
+            color: white;
+            background-color: blue;
+            font-family: comic-sans;
+            font-size: 30px;
+
+        }
+        #reload{
+            padding: 5px;
+            color: black;
+            background-color: white;
+            font-family: comic-sans;
+            font-size: 12px;
+        }
+    
+/* Style The Dropdown Button */
+.dropbtn {
+  background-color: deeppink;
+  color: white;
+  padding: 16px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+}
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover {background-color: #f1f1f1}
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+/* Change the background color of the dropdown button when the dropdown content is shown */
+.dropdown:hover .dropbtn {
+  background-color: hotpink;
+}
+        
+    .dropdown-content {
+  right: 0;
+}
+     
+.loader {
+  border: 16px solid white; /* Light grey */
+  border-top: 16px solid hotpink; /* Blue */
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+        
+</style>
+    
+<script>
+    
+    var currentChat = "";
+    var enlarged = false;
+    tabWidth = 812;
+        imgWidth = 300;
+    imgHeight = 210;
+        profilePic = true;
+        uNameWidth = 50;
+        timeWidth1 = 112;
+    timeWidth2 = 112;
+        timeFont = 16;
+    lastTweetW = 550;
+    uName1W = 200;
+    uName2W = 130;
+    tweetW = 530;
+    var colsNum = 100;
+        var isMobile = false;
+        
+    if ( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+        tabWidth = 270;
+        imgWidth = 111;
+        imgHeight = 87;
+        profilePic = false;
+        uNameWidth = 48;
+        timeWidth = 40;
+        uName1W = 95;
+        uName2W = 75;
+        tweetW = 160;
+        timeWidth2 = 35;
+        timeFont = 12;
+        colsNum = 33;
+        lastTweetW = 133;
+        isMobile = true;
+    }
+    
+    var loadDate = new Date().toString();        
+        
+        // Initialize Firebase
+        var config = {
+        apiKey: "AIzaSyAMXtT9JDwMNyxZabBYoRi0041-Rf1vDnY",
+        authDomain: "test-b8fc5.firebaseapp.com",
+        databaseURL: "https://test-b8fc5.firebaseio.com",
+        projectId: "test-b8fc5",
+        storageBucket: "test-b8fc5.appspot.com",
+        messagingSenderId: "6609833657"
+        };
+        firebase.initializeApp(config);
+                
+        firebase.auth().onAuthStateChanged(function(user) {
+            if (user == null) {
+                alert("Not logged in.");
+                return;
+            } else {
+                userId = user.uid;
+                name = user.displayName;
+                imageUrl = user.photoURL;
+                email = user.email;
+                    
+                // write user data to users
+                writeUserData(userId, name, email, imageUrl);
+                
+                // write data to document
+                mydiv = document.getElementById("mydata");
+                mydiv.innerHTML = name;
+                myphotodiv = document.getElementById("myphoto");
+                myphotodiv.innerHTML = "<img src='" + imageUrl + "'/>";
+
+                msgArea = true;
+                updateBigBoard();
+                
+            } // end user null check
+        }); // end check auth state
+    
+    function writeUserData(userId, name, email, imageUrl) {
+            firebase.database().ref('users/' + userId).update({
+                username: name,
+                email: email,
+                profile_picture : imageUrl,
+                userId: userId
+            });
+    }
+    
+    var userChats = [];
+    var mytab = "";
+    var chatKey = "";
+    
+    function updateBigBoard() {
+        
+        enlarged = false;
+        document.getElementById("bigTable").innerHTML = "<center><div class='loader'></div> <br> <h3>Loading...</h3></center>";
+        loadDate = new Date().toString();
+        
+        document.getElementById("msgArea").innerHTML = "";
+        document.getElementById("smallDiv").innerHTML = "";
+        userChats = [];
+        mytab = "";
+        
+        firebase.database().ref('/private').once('value').then(function(snapshot) { 
+            
+            var data = (snapshot.val());
+            
+            var chatCount = 0;
+            var chatKeys = Object.keys(data);
+            
+            for (var c in data) {
+                for (var u in data[c].users) {
+                    if (data[c].users[u].user == name) {
+                        userChats.push(chatKeys[chatCount]);
+                    }
+                }
+                chatCount++;
+            }
+            
+            mytab = mytab + "<table style='width:" + tabWidth + "px'>";
+            
+            for (var i = 0; i < userChats.length; i++) {
+                
+                chatKey = userChats[i];
+                mytab = mytab + "<tr height=33px onclick = 'enlarge(`" + chatKey + "`, true)'>";
+                var otherUsers = "";
+                for (var u in data[chatKey].users) {
+                    if (data[chatKey].users[u].user != name) {
+                        if (otherUsers == "") {
+                            otherUsers = data[chatKey].users[u].user;
+                        } else {
+                            otherUsers = otherUsers + ", " + data[chatKey].users[u].user;
+                        }
+                    }
+                }
+                var lastTweet = "";
+                var lastTweeter = "";
+                var time = "";
+                
+                if (data[chatKey].tweets == null) {
+                    
+                    mytab = mytab + "<td width = " + uName1W + "px>" + otherUsers + "</td>";
+                    mytab = mytab + "<td></td>";
+                    mytab = mytab + "<td>This chat has no tweets yet</td>";
+                    
+                } else {
+                
+                for (var t in data[chatKey].tweets) {
+                    
+                        if (data[chatKey].tweets[t].message != "") {
+                            lastTweet = data[chatKey].tweets[t].message;
+                            lastTweeter = data[chatKey].tweets[t].user;
+                        }
+                        
+                        var date = new Date(data[chatKey].tweets[t].date);
+                    time = date.toString();
+                    if (time.substring(0,15) == loadDate.substring(0,15)) {
+                        if (time.substring(16,18) == loadDate.substring(16,18)) {
+                            var num1 = Number(loadDate.substring(19,21));
+                            var num2 = Number(time.substring(19,21));
+                            console.log(num1);
+                            var num3 = num1 - num2;
+                            time = num3.toString() + " minutes ago";
+                        } else {
+                            var num1 = Number(loadDate.substring(16,18));
+                            var num2 = Number(time.substring(16,18));
+                            var num3 = num1 - num2;
+                            if (num3 == 1) {
+                                var num1 = Number(loadDate.substring(19,21));
+                                var num2 = Number(time.substring(19,21));
+                                console.log(num1);
+                                var num3 = num1 - num2 + 60;
+                                if (num3 > 59) {
+                                    time = "1 hour ago"
+                                } else {
+                                    time = num3.toString() + " minutes ago";
+                                }
+                            } else {
+                                time = num3.toString() + " hours ago";
+                            }
+                        }
+                    } else {
+                        time = time.substring(4,15);
+                    }
+                        
+                }
+                
+                mytab = mytab + "<td width = " + uName1W + "px>" + otherUsers + "</td>";
+                mytab = mytab + "<td></td>";
+                mytab = mytab + "<td width = " + lastTweetW + "px>" + lastTweet + " - " + lastTweeter + "</td>";
+                mytab = mytab + "<td></td>";
+                mytab = mytab + "<td width = " + timeWidth1 + "px>" + time + "</td>";
+                
+                mytab = mytab + "</tr>";
+                    
+                }
+                
+            }
+            
+            mytab = mytab + "</table>";
+            
+            document.getElementById("msgArea").innerHTML = "<br><hr><br> <h3> Open Chat: </h3> Users: <input type='text' id='newCusers'> <button onclick='addUser()'>Add User</button> <button onclick='reset()'>Reset</button> <br><br> <div id='usersAdded'></div> <br> <button class='button-xlarge' onclick='newChat()'>Start chat</button>";
+            
+            document.getElementById("bigTable").innerHTML = mytab;
+            
+        });
+        
+    }
+    
+    var msgArea = true;
+    
+    var newChatUsers = [];
+    
+    function newChat() {
+        
+        if (newChatUsers.length != 0) {
+        
+        firebase.database().ref('/private').once('value').then(function(snapshot) { 
+            
+            var data = (snapshot.val());
+            var chatCheck = true;
+            var chatKEYS = Object.keys(data);
+            var chatKeyNum = 0;
+            var thisChatKey = "";
+            
+            for (var c in data) {
+                
+                var usersInChat = [];
+                
+                for (var i = 0; i < newChatUsers.length; i++) {
+                    usersInChat[i] = newChatUsers[i];
+                }
+                
+                var chatOk = false;
+                
+                for (var u in data[c].users) {
+                    
+                    for (var i = 0; i < usersInChat.length; i++) {
+                        if (usersInChat[i] == data[c].users[u].user) {
+                            usersInChat.splice(i, 1);
+                        } else {
+                            chatOk = true;
+                        }
+                    }
+                    
+                }
+                
+                if (usersInChat.length == 0 && !chatOk) {
+                    chatCheck = false;
+                    thisChatKey = chatKEYS[chatKeyNum];
+                }
+                
+                chatKeyNum++;
+                
+            }
+            
+            if (!chatCheck) {
+                alert("This chat already exists");
+                enlarge(thisChatKey, true);
+            } else {
+                firebase.database().ref('private/').push({
+                    changethis: true
+                });
+                
+                firebase.database().ref('/private').once('value').then(function(snapshot) {
+                    
+                data = (snapshot.val());
+                    
+                var keysKeys = Object.keys(data);
+                var xyz = 0;
+                for (var c in data) {
+                    if (data[c].users == null) {
+                        var neededKEY = keysKeys[xyz];
+                        firebase.database().ref('private/' + neededKEY).update({
+                            changethis: false
+                        });
+                        alert(newChatUsers);
+                        for (var i = 0; i < newChatUsers.length; i++) {
+                            var userToAdd = newChatUsers[i];
+                            firebase.database().ref('private/' + neededKEY + "/users").push({
+                                user: userToAdd
+                            });
+                        }
+                        firebase.database().ref('private/' + neededKEY + "/users").push({
+                            user: name
+                        });
+                    }
+                    xyz++;
+                }
+                updateBigBoard();
+                newChatUsers = [];
+                    
+                });
+            }
+            
+        });
+        
+        }
+            
+    }
+    
+    function reset() {
+        newChatUsers = [];
+        document.getElementById("usersAdded").innerHTML = "";
+    }
+    
+    function addUser() {
+        
+        newU = document.getElementById("newCusers").value;
+        
+        firebase.database().ref('/users').once('value').then(function(snapshot) { 
+                        
+            var users = (snapshot.val());
+        
+            var uOk = false;
+            var uIsSelf = false;
+            
+            for (var u in users) {
+                if ((users[u].username == newU || users[u].username2 == newU) && users[u].username == name) {
+                    alert("You can't add yourself");
+                    uIsSelf = true;
+                } else if (users[u].username == newU || users[u].username2 == newU) {
+                    uOk = true;
+                    newU = users[u].username;
+                }
+            }
+            
+            if (!uOk && !uIsSelf) {
+                alert("The user you searched for was not found");
+            }
+            
+            for (var i = 0; i < newChatUsers.length; i++) {
+                if (newChatUsers[i] == newU) {
+                    alert("You have already added this user");
+                    uOk = false;
+                }
+            }
+            
+            if (uOk && !uIsSelf) {
+            
+            newChatUsers.push(newU);
+            var newUstr = "";
+        
+            for (var i = 0; i < newChatUsers.length; i++) {
+                if (i != newChatUsers.length - 1) {
+                    newUstr = newUstr + newChatUsers[i] + ", ";
+                } else {
+                    newUstr = newUstr + newChatUsers[i];
+                }
+            }
+        
+            document.getElementById("usersAdded").innerHTML = newUstr;
+                
+            }
+            
+        });
+        
+    }
+    
+    function reload() {
+        if (enlarged) {
+            enlarge(currentChat, false);
+        } else {
+            updateBigBoard();
+        }
+    }
+    
+    function enlarge(KEY, msgA) {
+        
+        currentChat = KEY;
+        enlarged = true;
+        loadDate = new Date().toString();
+        document.getElementById("bigTable").innerHTML = "<center><div class='loader'></div> <br> <h3>Loading...</h3></center>";
+        
+        if (msgA) {
+            msgArea = true;
+        }
+        chatKey = KEY;
+        
+        firebase.database().ref('/private/' + chatKey).once('value').then(function(snapshot) { 
+                        
+            var data = (snapshot.val());
+            
+            var otherUsers = "";
+                
+            for (var u in data.users) {
+                if (data.users[u].user != name) {
+                    if (otherUsers == "") {
+                        otherUsers = data.users[u].user;
+                    } else {
+                        otherUsers = otherUsers + ", " + data.users[u].user;
+                    }
+                }
+            }
+            
+            mytab = "<button onclick = 'updateBigBoard()' class='button-xlarge'>X</button> <br><br> <h3>" + otherUsers + "</h3> <br>";
+            document.getElementById("smallDiv").innerHTML = mytab;
+            mytab = "";
+            mytab = mytab + "<table style='width:" + tabWidth + "px'>";
+            
+            data = data["tweets"];
+            
+            for (var t in data) {
+                
+                var date = new Date(data[t].date);
+                    var time = date.toString();
+                    if (time.substring(0,15) == loadDate.substring(0,15)) {
+                        if (time.substring(16,18) == loadDate.substring(16,18)) {
+                            var num1 = Number(loadDate.substring(19,21));
+                            var num2 = Number(time.substring(19,21));
+                            console.log(num1);
+                            var num3 = num1 - num2;
+                            time = num3.toString() + " minutes ago";
+                        } else {
+                            var num1 = Number(loadDate.substring(16,18));
+                            var num2 = Number(time.substring(16,18));
+                            var num3 = num1 - num2;
+                            if (num3 == 1) {
+                                var num1 = Number(loadDate.substring(19,21));
+                                var num2 = Number(time.substring(19,21));
+                                console.log(num1);
+                                var num3 = num1 - num2 + 60;
+                                if (num3 > 59) {
+                                    time = "1 hour ago"
+                                } else {
+                                    time = num3.toString() + " minutes ago";
+                                }
+                            } else {
+                                time = num3.toString() + " hours ago";
+                            }
+                        }
+                    } else {
+                        time = time.substring(4,15);
+                    }
+                
+                mytab = mytab + "<tr height = 33px>";
+                if (data[t].img == "" || data[t].img == null) {
+                mytab = mytab + "<td width = " + tweetW + "px>" + data[t].message + "</td>";
+                } else {
+                mytab = mytab + "<td width = " + tweetW + "px><img max-width = " + imgWidth + "px height = " + imgHeight + "px src='" + data[t].img + "'>" + data[t].message + "</td>";
+                }
+                mytab = mytab + "<td></td>";
+                mytab = mytab + "<td width = " + uName2W + "px>" + data[t].user + "</td>";
+                mytab = mytab + "<td></td>";
+                mytab = mytab + "<td width = " + timeWidth2 + "px>" + time + "</td>";
+                mytab = mytab + "</tr>";
+            }
+            
+            mytab = mytab + "</table>";
+            var textArea = "<br>Message:<br><textarea id='twit' type='text' name='thetweet' cols='" + colsNum + "' rows='4'></textarea><br><br>Image: <br><input id='inputFileToLoad' type='file' accept='.jpg,.jpeg,.png' onchange='encodeImageFileAsURL();' /><div id='imgTest' style='display:none;'></div><br><br><button onclick = 'message()'>Send</button>";
+            document.getElementById("bigTable").innerHTML = mytab;
+            if (msgArea) {
+                document.getElementById("msgArea").innerHTML = textArea;
+                msgArea = false;
+            }
+            
+            document.getElementById("bigDiv").scrollTop = document.getElementById("bigDiv").scrollHeight;
+            
+        });
+        
+    }
+    
+    function encodeImageFileAsURL() {
+
+            var filesSelected = document.getElementById("inputFileToLoad").files;
+            if (filesSelected.length > 0) {
+                var fileToLoad = filesSelected[0];
+                var fileReader = new FileReader();
+                fileReader.onload = function(fileLoadedEvent) {
+                    var srcData = fileLoadedEvent.target.result; // <--- data: base64
+                    //var newImage = document.createElement('img');
+                    //newImage.src = srcData;
+                    //document.getElementById("imgTest").innerHTML = newImage.outerHTML;
+                    document.getElementById("imgTest").innerHTML = srcData;
+                    //console.log("Converted Base64 version is: " + document.getElementById("imgTest").innerHTML);
+                    console.log(srcData);
+                }
+                fileReader.readAsDataURL(fileToLoad);
+            }
+        }
+    
+    function message() {
+        var message = document.getElementById("twit").value;
+        var img = document.getElementById("imgTest").innerHTML;
+        if (message.length > 140) {
+            alert("Your message can't exceed 140 characters");
+        } else if (message == "" && img == "") {
+            alert("You must send a message, a photo, or both");
+        } else {
+        var js_time = Date.now();
+        firebase.database().ref('private/' + chatKey + "/tweets").push({
+            user: name,
+            message: message,
+            date: js_time,
+            img: img
+        });
+        document.getElementById("imgTest").innerHTML = "";
+        enlarge(chatKey, false);
+        document.getElementById("twit").value = "";
+        }
+    }
+    
+</script>
+    
+    <div class="dropdown" style="float: right;">
+  <button class="dropbtn">Menu</button>
+  <div class="dropdown-content">
+    <a href = "index.html"> Leave Tutorial</a>
+       <a href="tweetstutorial.html">Home</a>
+      <a href="pmtutorial.html">Messages</a>
+      <a href="pollstutorial.html">Polls</a>
+  </div>
+</div>
+        
+        <br>
+                      
+        <button id = "signin" onclick="signin()">Sign in</button>
+        <button id = "signout"onclick="signout()">Sign out</button>
+               
+        <br><br>
+        <center><h2>Private Messaging</h2></center>
+        <br><button onclick='reload()' style='float: right'>Reload</button><br><hr><br>
+    
+        <div onclick = "SmallDiv()" accesskey=""id = 'smallDiv'></div>
+        <div onclick = "BigDiv()" id = "bigDiv" style='width:820px; height:280px; overflow-y:auto; overflow-x: hidden'>
+        <div onclick = "BigTable()" id = "bigTable"></div>
+        </div>
+        <div onclick = "msgArea()" id = 'msgArea'></div>
+            
+        <br><br><hr><br>
+    
+        <center>
+        <div id="mydata"></div>
+        <div id="myphoto"></div>
+        </center>
+
+    <script>
+    
+        if ( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+            document.getElementById("bigDiv").style.height = 210;
+        }
+        
+        function signin() {
+          alert("Sign in through Google!");  
+            tutorialcount++;
+        }
+        
+        function signout() {
+            alert("Log out to protect your privacy!"); 
+            tutorialcount++;
+        }
+        function reload() {
+            alert("Reload Posts to immediately see your latest creation!"); 
+            tutorialcount++;
+        }
+        function msgArea() {
+            alert("Send someone what you're thinking...")
+            tutorialcount++;
+        }
+        
+        function SmallDiv() {
+            alert("Who are you talking to?")
+        }
+        
+        function UpdateBigBoard() {
+            alert("close it")
+        }
+    </script>
+
+</html>

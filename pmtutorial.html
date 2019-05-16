@@ -434,55 +434,7 @@
     
     function addUser() {
         
-        newU = document.getElementById("newCusers").value;
-        
-        firebase.database().ref('/users').once('value').then(function(snapshot) { 
-                        
-            var users = (snapshot.val());
-        
-            var uOk = false;
-            var uIsSelf = false;
-            
-            for (var u in users) {
-                if ((users[u].username == newU || users[u].username2 == newU) && users[u].username == name) {
-                    alert("You can't add yourself");
-                    uIsSelf = true;
-                } else if (users[u].username == newU || users[u].username2 == newU) {
-                    uOk = true;
-                    newU = users[u].username;
-                }
-            }
-            
-            if (!uOk && !uIsSelf) {
-                alert("The user you searched for was not found");
-            }
-            
-            for (var i = 0; i < newChatUsers.length; i++) {
-                if (newChatUsers[i] == newU) {
-                    alert("You have already added this user");
-                    uOk = false;
-                }
-            }
-            
-            if (uOk && !uIsSelf) {
-            
-            newChatUsers.push(newU);
-            var newUstr = "";
-        
-            for (var i = 0; i < newChatUsers.length; i++) {
-                if (i != newChatUsers.length - 1) {
-                    newUstr = newUstr + newChatUsers[i] + ", ";
-                } else {
-                    newUstr = newUstr + newChatUsers[i];
-                }
-            }
-        
-            document.getElementById("usersAdded").innerHTML = newUstr;
-                
-            }
-            
-        });
-        
+        alert("Add a user to your chat");
     }
     
     function reload() {
@@ -672,6 +624,13 @@
           alert("Sign in through Google!");  
             tutorialcount++;
         }
+        function reset() {
+            alert("Get rid of your found chat")
+        }
+        
+        function newChat() {
+            alert("Start a new chat")
+        }
         
         function signout() {
             alert("Log out to protect your privacy!"); 
@@ -687,11 +646,15 @@
         }
         
         function SmallDiv() {
-            alert("Who are you talking to?")
+            alert("Leave the chat!")
         }
         
         function UpdateBigBoard() {
             alert("close it")
+        }
+        
+        function message() {
+            alert("send away")
         }
     </script>
 

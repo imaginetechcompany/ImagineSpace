@@ -67,6 +67,13 @@
                     console.log(data);
                     mydiv.innerHTML = name + " | " + data.title;
                     
+                    if (data.bgImg != null) {
+                        
+                        var htmlE = document.getElementsByTagName("html");
+                        htmlE[0].style.backgroundImage = "url('" + data.bgImg + "')";
+                        
+                    }
+                    
                 });
                 
                 myphotodiv = document.getElementById("myphoto");

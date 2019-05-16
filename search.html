@@ -32,7 +32,23 @@
                 
                 // write data to document
                 mydiv = document.getElementById("mydata");
-                mydiv.innerHTML = name
+
+                firebase.database().ref('/users/' + userId + "/rewards").once('value').then(function(snapshot) { 
+                
+                    var data = (snapshot.val());
+                    
+                    console.log(data);
+                    mydiv.innerHTML = name + " | " + data.title;
+                    
+                    if (data.bgImg != null) {
+                        
+                        var htmlE = document.getElementsByTagName("html");
+                        htmlE[0].style.backgroundImage = "url('" + data.bgImg + "')";
+                        
+                    }
+                    
+                });
+                
                 myphotodiv = document.getElementById("myphoto");
                 myphotodiv.innerHTML = "<img src='" + imageUrl + "'/>";
                 

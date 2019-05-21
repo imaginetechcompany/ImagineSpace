@@ -176,12 +176,13 @@
         
         // Initialize Firebase
         var config = {
-        apiKey: "AIzaSyAMXtT9JDwMNyxZabBYoRi0041-Rf1vDnY",
-        authDomain: "test-b8fc5.firebaseapp.com",
-        databaseURL: "https://test-b8fc5.firebaseio.com",
-        projectId: "test-b8fc5",
-        storageBucket: "test-b8fc5.appspot.com",
-        messagingSenderId: "6609833657"
+        apiKey: "AIzaSyBjmFyo9hsjeZAxuR-8d2-BYCzixQs36GQ",
+    authDomain: "imaginespace2.firebaseapp.com",
+    databaseURL: "https://imaginespace2.firebaseio.com",
+    projectId: "imaginespace2",
+    storageBucket: "imaginespace2.appspot.com",
+    messagingSenderId: "416634792949",
+    appId: "1:416634792949:web:becc86cf8681f714"
         };
         firebase.initializeApp(config);
                 
@@ -200,6 +201,17 @@
                 
                 // write data to document
                 mydiv = document.getElementById("mydata");
+                
+                firebase.database().ref('/users/' + userId + "/rewards").once('value').then(function(snapshot) { 
+                var data = (snapshot.val());
+                    if (data == null) {
+                        firebase.database().ref('users/' + userId + "/rewards").update({
+                            points: 0,
+                            pointsTotal: 0,
+                            title: "Beginner"
+                        });
+                    }
+            });
                 
                 firebase.database().ref('/users/' + userId + "/rewards").once('value').then(function(snapshot) { 
                 
@@ -268,17 +280,6 @@
                 email: email,
                 profile_picture : imageUrl,
                 userId: userId
-            });
-            
-            firebase.database().ref('/users/' + userId + "/rewards").once('value').then(function(snapshot) { 
-                var data = (snapshot.val());
-                    if (data == null) {
-                        firebase.database().ref('users/' + userId + "/rewards").update({
-                            points: 0,
-                            pointsTotal: 0,
-                            title: "Beginner"
-                        });
-                    }
             });
             
             firebase.database().ref('/users').once('value').then(function(snapshot) { 
@@ -472,6 +473,7 @@ function sleep(seconds) {
                     var lz = 0;
                     var likeKeys = [];
                     var ly = 0;
+                    var likerList = [];
                     var containtsLiker = false;
                     
                     //firebase.database().ref('tweets/' + uID + "/" + tKey + "/likers").remove();
@@ -522,10 +524,12 @@ function sleep(seconds) {
                     }
                     
                     ly = 0;
+                    likerList = [];
                     
                     for (var l in data[u][t].likers) {
                         if (data[u][t].likers[l].liked == true) {
                             ly++;
+                            likerList[likerList.length] = data[u][t].likers[l].user;
                         }
                     }
                     

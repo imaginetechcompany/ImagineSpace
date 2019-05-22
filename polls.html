@@ -299,7 +299,7 @@
             var today = new Date().toString();
             today = today.substring(4,15);
             
-            firebase.database().ref('/shop/features/voting/users').once('value').then(function(snapshot) { 
+            firebase.database().ref('/shop/features/doubleVote/users').once('value').then(function(snapshot) { 
                     var users = (snapshot.val());
                     for (var u in users) {
                         if (users[u].user == name) {
@@ -424,7 +424,7 @@
                     doubleVoteEnabled = true;
                 }
                 
-            firebase.database().ref('shop/features/voting/users').once('value').then(function(snapshot) { 
+            firebase.database().ref('shop/features/doubleVote/users').once('value').then(function(snapshot) { 
                 var data = (snapshot.val());
                     for (var u in data) {
                         if (data[u].user == name) {
@@ -435,7 +435,7 @@
                 
                 if (doubleVoteEnabled) {
                 alert("Congratualations! You have voted for the last 7 days in a row - you have earned the ability to vote twice in one day and 3 Imagine Points.");
-                    firebase.database().ref('shop/features/voting/users').push({
+                    firebase.database().ref('shop/features/doubleVote/users').push({
                             user: name
                         });
                     

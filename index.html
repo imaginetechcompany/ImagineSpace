@@ -591,7 +591,7 @@ function sleep(seconds) {
                             mytab = mytab + "<img width=20px src = 'heart1.png'  id = '" + tKey + "'>";
                         }
                         mytab = mytab + "</button>";
-                        mytab = mytab + "<center><div id='" + likeKey + "'>" + "<button style='font-size: 15px' class='noC' onclick='alert(" + JSON.stringify(likerList) + ")'>" + likes + "</button>" + "</div></center></td>";
+                        mytab = mytab + "<center><div id='" + likeKey + "'>" + "<button id = '" + tKey + "0' style='font-size: 15px' class='noC' onclick='alert(" + JSON.stringify(likerList) + ")'>" + likes + "</button>" + "</div></center></td>";
                         if (profilePic) {
                         if (users[u].profile_picture2 == null) {
                             mytab = mytab + "<td><img class = 'zoom' src='" + users[u].profile_picture + "' width='70px'></td>";
@@ -621,7 +621,7 @@ function sleep(seconds) {
                             mytab = mytab + "<img width=20px src = 'heart1.png'  id = '" + tKey + "'>";
                         }
                         mytab = mytab + "</button>";
-                        mytab = mytab + "<center><div id='" + likeKey + "'>" + "<button style='font-size: 15px' class='noC' onclick='alert(" + JSON.stringify(likerList) + ")'>" + likes + "</button>" + "</div></center></td>";
+                        mytab = mytab + "<center><div id='" + likeKey + "'>" + "<button id = '" + tKey + "0' style='font-size: 15px' class='noC' onclick='alert(" + JSON.stringify(likerList) + ")'>" + likes + "</button>" + "</div></center></td>";
                         if (profilePic) {
                         if (users[u].profile_picture2 == null) {
                             mytab = mytab + "<td><img class = 'zoom' src='" + users[u].profile_picture + "' width='70px'></td>";
@@ -651,7 +651,7 @@ function sleep(seconds) {
                             mytab = mytab + "<img width=20px src = 'heart1.png'  id = '" + tKey + "'>";
                         }
                         mytab = mytab + "</button>";
-                        mytab = mytab + "<center><div id='" + likeKey + "'>" + "<button style='font-size: 15px' class='noC' onclick='alert(" + JSON.stringify(likerList) + ")'>" + likes + "</button>" + "</div></center></td>";
+                        mytab = mytab + "<center><div id='" + likeKey + "'>" + "<button id = '" + tKey + "0' style='font-size: 15px' class='noC' onclick='alert(" + JSON.stringify(likerList) + ")'>" + likes + "</button>" + "</div></center></td>";
                         if (profilePic) {
                         if (users[u].profile_picture2 == null) {
                             mytab = mytab + "<td><img class = 'zoom' src='" + users[u].profile_picture + "' width='70px'></td>";
@@ -698,7 +698,7 @@ function sleep(seconds) {
         }
         
         function like(uID, tKey, likeKey) {
-            
+                        
             firebase.database().ref('tweets/' + uID + "/" + tKey + "/likers/" + likeKey).once('value').then(function(snapshot) { 
                     var data = (snapshot.val());    
                     if (data.liked == true) {
@@ -707,7 +707,7 @@ function sleep(seconds) {
                             });
                         document.getElementById(tKey).src = "heart1.png";
                         
-                        var likes = document.getElementById(likeKey);
+                        var likes = document.getElementById(tKey + "0");
                         likesNum = Number(likes.innerHTML);
                         likesNum--;
                         likes.innerHTML = likesNum;
@@ -718,7 +718,7 @@ function sleep(seconds) {
                             });
                             document.getElementById(tKey).src = "heart2.png";
                             
-                            var likes = document.getElementById(likeKey);
+                        var likes = document.getElementById(tKey + "0");
                         likesNum = Number(likes.innerHTML);
                         likesNum++;
                         likes.innerHTML = likesNum;

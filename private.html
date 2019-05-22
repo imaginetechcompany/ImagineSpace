@@ -4,7 +4,7 @@
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google-site-verification" content="1dMM1Za6PMNj0zxB3LZcDotOBPao6C7jL0J4kVH3vJc" />
-    <title>ImagineSpace</title>
+    <title>ImagineSpace: Messages</title>
     <link href="main2.css" rel="stylesheet" type="text/css" />
     
     </head>
@@ -233,6 +233,7 @@
     var userChats = [];
     var mytab = "";
     var chatKey = "";
+    var newChats = [];
     
     function updateBigBoard() {
         
@@ -243,8 +244,9 @@
         document.getElementById("msgArea").innerHTML = "";
         document.getElementById("smallDiv").innerHTML = "";
         userChats = [];
+        newChats = [];
         mytab = "";
-        
+                
         firebase.database().ref('/private').once('value').then(function(snapshot) { 
             
             var data = (snapshot.val());
@@ -256,6 +258,9 @@
                 for (var u in data[c].users) {
                     if (data[c].users[u].user == name) {
                         userChats.push(chatKeys[chatCount]);
+                        if (data[c].users[u].updated == false) {
+                            newChats.push(chatKeys[chatCount]);
+                        }
                     }
                 }
                 chatCount++;
@@ -328,13 +333,24 @@
                     }
                         
                 }
+                    
+                    var newC = false;
+                    
+                for (var k = 0; k < newChats.length; k++) {
+                    if (newChats[k] == chatKey) {
+                        newC = true;
+                    }
+                }
                 
                 mytab = mytab + "<td width = " + uName1W + "px>" + otherUsers + "</td>";
                 mytab = mytab + "<td></td>";
                 mytab = mytab + "<td width = " + lastTweetW + "px>" + lastTweet + " - " + lastTweeter + "</td>";
                 mytab = mytab + "<td></td>";
+                if (!newC) {
                 mytab = mytab + "<td width = " + timeWidth1 + "px>" + time + "</td>";
-                
+                } else {
+                mytab = mytab + "<td style='background: white' width = " + timeWidth1 + "px>" + time + "</td>";
+                }
                 mytab = mytab + "</tr>";
                     
                 }
@@ -512,6 +528,27 @@
     function enlarge(KEY, msgA) {
         
         currentChat = KEY;
+        
+        firebase.database().ref('/private/' + currentChat + "/users").once('value').then(function(snapshot) { 
+        
+            var data = (snapshot.val());
+            var uKeys = Object.keys(data);
+            var uCount = 0;
+            
+            for (var u in data) {
+            
+                if (data[u].user == name) {
+                    uId = uKeys[uCount]
+                    firebase.database().ref('private/' + currentChat + "/users/" + uId + "/").update({
+                        updated: true
+                    });
+                }
+                
+                uCount++;
+            }
+            
+        });
+            
         enlarged = true;
         loadDate = new Date().toString();
         document.getElementById("bigTable").innerHTML = "<center><div class='loader'></div> <br> <h3>Loading...</h3></center>";
@@ -640,6 +677,27 @@
         });
         document.getElementById("imgTest").innerHTML = "";
         enlarge(chatKey, false);
+            
+            firebase.database().ref('/private/' + chatKey + "/users").once('value').then(function(snapshot) { 
+        
+            var data = (snapshot.val());
+            var uKeys = Object.keys(data);
+            var uCount = 0;
+            
+            for (var u in data) {
+            
+                if (data[u].user != name) {
+                    uId = uKeys[uCount]
+                    firebase.database().ref('private/' + chatKey + "/users/" + uId + "/").update({
+                        updated: false
+                    });
+                }
+                
+                uCount++;
+            }
+            
+        });
+            
         document.getElementById("twit").value = "";
         }
     }

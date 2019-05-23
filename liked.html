@@ -542,9 +542,7 @@
                     
                 var data = (snapshot.val());    
                     
-                    
-                        if (tweetsOrder.length < 10) {
-                
+                                    
                         for (var u in data) {
                         
                             followingUser = false;
@@ -591,13 +589,13 @@
                                     } else if (i == tweetsOrder.length - 1) {
                                         if (tweetTime < data[usersOrder[i-1]][tweetsOrder[i-1]].time) {
                                         tweetsOrder[tweetsOrder.length] = tweetKey;
-                                        usersOrder[tweetsOrder.length] = userID;
+                                        usersOrder[usersOrder.length] = userID;
                                         }
                                     } else if (tweetTime < data[usersOrder[i-1]][tweetsOrder[i-1]].time && tweetTime > data[usersOrder[i]][tweetsOrder[i]].time) {
                                         tweetsOrder.splice(i,0,tweetKey);
                                         usersOrder.splice(i,0,userID);
                                     }
-                                }   
+                                }    
                             
                         }
                         
@@ -605,9 +603,10 @@
                         }
                     }
                 
-            }
-                
                     console.log(tweetsOrder);
+                
+                tweetsOrder.pop();
+                usersOrder.pop();
                     
                     updatetweets2(datanew);
                     

@@ -232,6 +232,45 @@
                 myphotodiv = document.getElementById("myphoto");
                 myphotodiv.innerHTML = "<img src='" + imageUrl + "'/>";
 
+                firebase.database().ref('/users/' + userId).once('value').then(function(snapshot) { 
+                
+                    var data = (snapshot.val());
+                    
+                    var incomplete = false;
+                    
+                    if (data.tutorial == null) {
+                        firebase.database().ref('/users/' + userId).update({
+                            tutorial: "incomplete"
+                        });
+                        incomplete = true;
+                    } else if (data.tutorial == "incomplete") {
+                        incomplete = true;
+                    }
+                    
+                    if (incomplete) {
+                        var doT = confirm("You haven't completed the tutorial yet. Would you like to?");
+                        if (doT) {
+                            alert("You will now receive 1 Imagine Point and be redirected to the tutorial.");
+                            firebase.database().ref('/users/' + userId).update({
+                                tutorial: "complete"
+                            });
+                firebase.database().ref('/users/' + userId + "/rewards").once('value').then(function(snapshot) { 
+                                var data2 = (snapshot.val());
+                                var newPoints = Number(data2.points) + 1;
+                                firebase.database().ref('/users/' + userId + "/rewards").update({
+                                    points: newPoints
+                                });
+                                newPoints = Number(data2.pointsTotal) + 1;
+                                firebase.database().ref('/users/' + userId + "/rewards").update({
+                                    pointsTotal: newPoints
+                                });
+                            });
+                            window.open("tweetstutorial.html", "_self");
+                        }
+                    }
+                    
+                });
+                
                 firebase.database().ref('/tweets').once('value').then(function(snapshot) {
                     var data = (snapshot.val());
                     if (data == null) {

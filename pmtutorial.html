@@ -200,7 +200,6 @@
                 myphotodiv.innerHTML = "<img src='" + imageUrl + "'/>";
 
                 msgArea = true;
-                updateBigBoard();
                 
             } // end user null check
         }); // end check auth state
@@ -415,7 +414,7 @@
                     }
                     xyz++;
                 }
-                updateBigBoard();
+    
                 newChatUsers = [];
                     
                 });
@@ -575,7 +574,6 @@
             img: img
         });
         document.getElementById("imgTest").innerHTML = "";
-        enlarge(chatKey, false);
         document.getElementById("twit").value = "";
         }
     }
@@ -603,7 +601,9 @@
     
         <div onclick = "SmallDiv()" accesskey=""id = 'smallDiv'></div>
         <div onclick = "BigDiv()" id = "bigDiv" style='width:820px; height:280px; overflow-y:auto; overflow-x: hidden'>
-        <div onclick = "BigTable()" id = "bigTable"></div>
+        <div onclick = "BigTable()" id = "bigTable">
+            <div id="bigTable"><table style="width:812px"><tbody><tr height="33px" ><td onclick = "recipient()" width="200px">Warren Buffet</td><td></td><td onclick = "whatmessage()"width="550px">could I borrow the plane next week?</td><td></td><td onclick = "timeago()" width="112px">45 minutes ago</td></tr><tr height="33px"><td onclick = "recipient()" width="200px">Kevin Pangos</td><td></td><td onclick = "whatmessage()" width="550px">How's the basketball career going?</td><td></td><td onclick = "timeago()" width="112px">May 22 2019</td></tr></tbody></table></div></div>
+            
         </div>
         <div onclick = "msgArea()" id = 'msgArea'></div>
             
@@ -655,6 +655,16 @@
         
         function message() {
             alert("send away")
+        }
+        
+        function timeago() {
+            alert("how long ago was the last message?")
+        }
+        function whatmessage() {
+            alert("what is the latest message?")
+        }
+        function recipient() {
+            alert("who else is in the chat?")
         }
     </script>
 

@@ -525,6 +525,23 @@ Search: <input type="text" id="inputName"> <button id = "submit" onclick="Submit
                                 user: name,
                                 following: true
                             });
+                            var alreadyThere = false;
+                            for (var u3 in users[u].newfollowers) {
+                                if (users[u].newfollowers[u3].user == name) {
+                                    alreadyThere = true;
+                                }
+                            }
+                            var newFollowing = true;
+                            for (var u4 in users[u].followers) {
+                                if (users[u].followers[u4].user == name && users[u].followers[u4].following == true) {
+                                    newFollowing = false;
+                                }
+                            }
+                            if (!alreadyThere && newFollowing) {
+                            firebase.database().ref('users/' + users[u].userId + "/newfollowers/").push({
+                                user: name,
+                            });
+                            }
                             xyzBool = true;
                         }
                     }

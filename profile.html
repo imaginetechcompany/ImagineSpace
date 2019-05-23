@@ -300,6 +300,17 @@
             });
             alert("You are now following " + newName);
         }*/
+        var newFollowers = [];
+        var newFollowBut = "";
+        
+        function alertNewFollowers() {
+            if (newFollowers[0] == null) {
+                alert("You have no new followers");
+            } else {
+                alert(newFollowers);
+            }
+            firebase.database().ref('users/' + userId + "/newfollowers").remove();
+        }
         
         function updateInfo() {
                         
@@ -308,6 +319,7 @@
             var infoBio = "";
             
             followers = [];
+            newFollowers = [];
             
             firebase.database().ref('/users').once('value').then(function(snapshot) { 
                 var userdata = (snapshot.val());
@@ -316,7 +328,7 @@
                 users = dataarray[0];
                 
                     for (var u in users) {
-                        if (users[u].username == name) {
+                        if (users[u].userId == userId) {
                             var uID2 = users[u].userId;
                                 
                             if (users[u].username2 != null) {
@@ -344,6 +356,9 @@
                                 if (!alreadyAdded && users[u].followers[x].following == true) {
                                     followers[followers.length] = users[u].followers[x].user;
                                 }
+                            }
+                            for (var u2 in users[u].newfollowers) {
+                                newFollowers[newFollowers.length] = users[u].newfollowers[u2].user;
                             }
                         
                         firebase.database().ref('/users/' + uID2 + '/rewards/').once('value').then(function(snapshot) { 
@@ -619,7 +634,7 @@
         <hr>
         
         <br>
-        <center><button class='button-xlarge' onclick='window.open(`liked.html`, `_self`)'>Liked Tweets</button><br><br><button class='button-xlarge' onclick='window.open(`leaders.html`, `_self`)'>Leaders</button></center>
+        <center><button class='button-xlarge' onclick='window.open(`liked.html`, `_self`)'>Liked Tweets</button><br><br><button class='button-xlarge' onclick='window.open(`leaders.html`, `_self`)'>Leaders</button><br><br><button class='button-xlarge' onclick = 'alertNewFollowers()'>New Followers</button></center>
         <br>
         <center><h2>Your profile:</h2></center><br>
         <div id="YourProfile"><center><div class='loader'></div> <br>

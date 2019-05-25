@@ -6,7 +6,6 @@
     <meta name="google-site-verification" content="1dMM1Za6PMNj0zxB3LZcDotOBPao6C7jL0J4kVH3vJc" />
     <title>ImagineSpace</title>
     <link href="main2.css" rel="stylesheet" type="text/css" />
-    <link rel="shortcut icon" href="favicon.ico"/>
     
     </head>
     
@@ -128,7 +127,6 @@
   width: 120px;
   height: 120px;
   animation: spin 2s linear infinite;
-    background-image: url('logo.png');
 }
 
 @keyframes spin {
@@ -177,13 +175,12 @@
         
         // Initialize Firebase
         var config = {
-        apiKey: "AIzaSyBjmFyo9hsjeZAxuR-8d2-BYCzixQs36GQ",
-    authDomain: "imaginespace2.firebaseapp.com",
-    databaseURL: "https://imaginespace2.firebaseio.com",
-    projectId: "imaginespace2",
-    storageBucket: "imaginespace2.appspot.com",
-    messagingSenderId: "416634792949",
-    appId: "1:416634792949:web:becc86cf8681f714"
+        apiKey: "AIzaSyAMXtT9JDwMNyxZabBYoRi0041-Rf1vDnY",
+        authDomain: "test-b8fc5.firebaseapp.com",
+        databaseURL: "https://test-b8fc5.firebaseio.com",
+        projectId: "test-b8fc5",
+        storageBucket: "test-b8fc5.appspot.com",
+        messagingSenderId: "6609833657"
         };
         firebase.initializeApp(config);
                 
@@ -210,30 +207,7 @@
                       //updatetweets(data);
                     }
                 });
-            
-            firebase.database().ref('/tutorial').once('value').then(function(snapshot) {
-                    var data = (snapshot.val());
-                var tutorialComplete = false;
-                    for (var u in data) {
-                        if (data[u].user == name) {
-                            tutorialComplete = true;
-                        }
-                    }
-                if (!tutorialComplete) {
-                    alert("Welcome to the tutorial, since this is your first time we are rewarding you with 1 Imagine Point!");
-                    firebase.database().ref('/users/' + userId + "/rewards").once('value').then(function(snapshot) { 
-                        var data2 = (snapshot.val());
-                        var newPoints = Number(data2.points) + 1;
-                        firebase.database().ref('/users/' + userId + "/rewards").update({
-                            points: newPoints
-                        });
-                        newPoints = Number(data2.pointsTotal) + 1;
-                        firebase.database().ref('/users/' + userId + "/rewards").update({
-                            pointsTotal: newPoints
-                        });
-                }
-                });
-            
+            } // end user null check
         }); // end check auth state
         
         function encodeImageFileAsURL() {
@@ -696,7 +670,7 @@ function sleep(seconds) {
   <button class="dropbtn">Menu</button>
   <div class="dropdown-content">
     <a href = "index.html"> Leave Tutorial</a>
-       <a href="tweetstutorial.html">Home</a>
+       <a href="tweetstutorial.html">Home</wa>
       <a href="pmtutorial.html">Messages</a>
       <a href="pollstutorial.html">Polls</a>
   </div>
@@ -744,8 +718,14 @@ function sleep(seconds) {
         
     <div id = "notFollowing"></div>
     <div id="mytweets">
-    <center><div class="loader"></div> <br>
-    <h3>Loading...</h3></center>
+        
+    <center>
+        <table id = "mytable" width = "799">
+        <tbody>
+        <tr style="background-color: orange"><td width="22px"><button class="noC" onclick="liked()"><img width="20px" src="heart1.png" id="-Lf_JUHDO5zQzZdV6oJk"></button><center><div id="-Lf_NEDGGY1ThP_xWJjA"><button id="-Lf_JUHDO5zQzZdV6oJk0" style="font-size: 15px" class="noC" onclick=wholiked()>1</button></div></center></td><td><img class="zoom" width="70px"></td><td></td><td style="font-size: 16px" width="50" px=""> <center onclick = poster()>amanji24</center> </td><td></td><td width="1px" onclick = text()>Complete the tutorial for an ImagineSpace Point!</td><td></td><td width="50px" style="font-size: 16px" onclick = "longago()">42 minutes ago</td></tr>
+        </tbody>
+            </table>
+        </center>
     </div>
         
     <br> <hr> <br>
@@ -794,7 +774,22 @@ function sleep(seconds) {
             alert("Show off whatever you want from Youtube or Vimeo!")
             tutorialcount++;
         }
-    
+        
+        function liked() {
+            alert("Like your favorite photos! These will be saved for later access in your profile")
+        }
+        function wholiked() {
+            alert("See who liked this post")
+        }
+        function poster() {
+            alert("Who posted this?")
+        }
+        function text() {
+            alert("What did people have to say?")
+        }
+        function longago() {
+            alert("How long ago was this?")
+        }
     </script>
 
     

@@ -806,6 +806,10 @@ function sleep(seconds) {
                             firebase.database().ref('tweets/' + uKs[dataKeys] + "/" + tKs[tKeyC]).update({
                                 key: tKs[tKeyC]
                             });
+                            firebase.database().ref('tweets/' + uKs[dataKeys] + "/" + tKs[tKeyC] + "/likers").push({
+                                user: name,
+                                liked: false
+                            });
                             tKeyC++;
                         }
                         dataKeys++;

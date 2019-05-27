@@ -226,6 +226,7 @@ Search: <input type="text" id="inputName"> <button id = "submit" onclick="Submit
         function SubmitUser() {
             
             document.getElementById("tweetsArea").innerHTML = "";
+            document.getElementById("profileArea").innerHTML = "<center><div class='loader'></div> <br> <h3>Loading...</h3></center>";
             
             loadDate = new Date().toString();
             
@@ -304,6 +305,7 @@ Search: <input type="text" id="inputName"> <button id = "submit" onclick="Submit
                 
                 if (!userFound) {
                 alert("The user you searched for was not found");
+                document.getElementById("profileArea").innerHTML = "<h3>Search for a user!</h3>";
                 } else {
                     document.getElementById("followBut").innerHTML = "<button onclick='follow()'>Follow</button>";
                     document.getElementById("unfollowBut").innerHTML = "<button onclick='unfollow()'>Unfollow</button>";

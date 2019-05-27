@@ -1,0 +1,1024 @@
+<html>
+
+    <head>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-site-verification" content="1dMM1Za6PMNj0zxB3LZcDotOBPao6C7jL0J4kVH3vJc" />
+    <title>ImagineSpace</title>
+    <link href="main2.css" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="favicon.ico"/>
+    
+    </head>
+    
+    <script src="https://www.gstatic.com/firebasejs/5.8.5/firebase.js"></script>
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    
+    
+    <style>
+        
+        .noC {
+            border-radius: 0px;
+            border: none;
+            background-color: transparent;
+            transition: transform .25s;
+        }
+        
+        .noC:hover {
+            transform: scale(1.3);
+        }
+        
+        .noC:active {
+            transform: scale(1.5);
+        }
+        
+        tr:hover {background-color: #f5f5f5;}
+        th, td {
+            border-bottom: 1px solid #ddd;
+        }
+        
+        #signin{
+            padding: 5px;
+            color: white;
+            background-color: green;
+            font-family: comic-sans;
+            font-size: 15px;
+        }
+        #signout{
+            padding: 5px;
+            color: white;
+            background-color: red;
+            font-family: comic-sans;
+            font-size: 15px;
+        }
+        #submit{
+            padding: 5px;
+            color: white;
+            background-color: blue;
+            font-family: comic-sans;
+            font-size: 30px;
+
+        }
+        #reload{
+            padding: 5px;
+            color: black;
+            background-color: white;
+            font-family: comic-sans;
+            font-size: 12px;
+
+        }
+    
+    </style>
+    
+    <style>
+/* Style The Dropdown Button */
+.dropbtn {
+  background-color: deeppink;
+  color: white;
+  padding: 16px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+}
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover {background-color: #f1f1f1}
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+/* Change the background color of the dropdown button when the dropdown content is shown */
+.dropdown:hover .dropbtn {
+  background-color: hotpink;
+}
+        
+    .dropdown-content {
+  right: 0;
+}
+     
+.loader {
+  border: 16px solid white; /* Light grey */
+  border-top: 16px solid hotpink; /* Blue */
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  animation: spin 2s linear infinite;
+    background-image: url('logo.png');
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+        
+</style>
+    
+<style>
+
+    .zoom {
+  transition: transform .25s; /* Animation */
+}
+    
+.zoom:hover {
+  transform: scale(2.3); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+}
+</style>
+    
+    <script>
+        
+        tabWidth = 799;
+        imgWidth = 250;
+        profilePic = true;
+        uNameWidth = 50;
+        timeWidth = 50;
+        timeFont = 16;
+        usernameFont = 16;
+        var isMobile = false;
+        
+    if ( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+        tabWidth = 270;
+        imgWidth = 75;
+        profilePic = false;
+        uNameWidth = 48;
+        timeWidth = 21;
+        timeFont = 11;
+        usernameFont = 12;
+        isMobile = true;
+    }
+        
+        var newVidFile = "";
+        //var loadTime = new Date();
+        var loadDate = new Date().toString();        
+        
+        // Initialize Firebase
+        var config = {
+        apiKey: "AIzaSyBjmFyo9hsjeZAxuR-8d2-BYCzixQs36GQ",
+    authDomain: "imaginespace2.firebaseapp.com",
+    databaseURL: "https://imaginespace2.firebaseio.com",
+    projectId: "imaginespace2",
+    storageBucket: "imaginespace2.appspot.com",
+    messagingSenderId: "416634792949",
+    appId: "1:416634792949:web:becc86cf8681f714"
+        };
+        firebase.initializeApp(config);
+                
+        firebase.auth().onAuthStateChanged(function(user) {
+            if (user == null) {
+                alert("Not logged in.");
+                return;
+            } else {
+                userId = user.uid;
+                name = user.displayName;
+                imageUrl = user.photoURL;
+                email = user.email;
+                    
+                // write user data to users
+                writeUserData(userId, name, email, imageUrl);
+                
+                // write data to document
+                mydiv = document.getElementById("mydata");
+                
+                firebase.database().ref('/users/' + userId + "/rewards").once('value').then(function(snapshot) { 
+                var data = (snapshot.val());
+                    if (data == null) {
+                        firebase.database().ref('users/' + userId + "/rewards").update({
+                            points: 0,
+                            pointsTotal: 0,
+                            title: "Beginner"
+                        });
+                    }
+            });
+                
+                firebase.database().ref('/users/' + userId + "/rewards").once('value').then(function(snapshot) { 
+                
+                    var data = (snapshot.val());
+                    
+                    mydiv.innerHTML = name + " | " + data.title;
+                    
+                    if (data.bgImg != null) {
+                        
+                        var htmlE = document.getElementsByTagName("html");
+                        htmlE[0].style.backgroundImage = "url('" + data.bgImg + "')";
+                        
+                    }
+                    
+                });
+            
+                
+                myphotodiv = document.getElementById("myphoto");
+                myphotodiv.innerHTML = "<img src='" + imageUrl + "'/>";
+
+                firebase.database().ref('/users/' + userId).once('value').then(function(snapshot) { 
+                
+                    var data = (snapshot.val());
+                    
+                    var incomplete = false;
+                    
+                    if (data.tutorial == null) {
+                        firebase.database().ref('/users/' + userId).update({
+                            tutorial: "incomplete"
+                        });
+                        incomplete = true;
+                    } else if (data.tutorial == "incomplete") {
+                        incomplete = true;
+                    }
+                    
+                    if (incomplete) {
+                        var doT = confirm("You haven't completed the tutorial yet. Would you like to?");
+                        if (doT) {
+                            alert("You will now receive 1 Imagine Point and be redirected to the tutorial.");
+                            firebase.database().ref('/users/' + userId).update({
+                                tutorial: "complete"
+                            });
+                firebase.database().ref('/users/' + userId + "/rewards").once('value').then(function(snapshot) { 
+                                var data2 = (snapshot.val());
+                                var newPoints = Number(data2.points) + 1;
+                                firebase.database().ref('/users/' + userId + "/rewards").update({
+                                    points: newPoints
+                                });
+                                newPoints = Number(data2.pointsTotal) + 1;
+                                firebase.database().ref('/users/' + userId + "/rewards").update({
+                                    pointsTotal: newPoints
+                                });
+                            });
+                            window.open("tweetstutorial.html", "_self");
+                        }
+                    }
+                    
+                });
+                
+                firebase.database().ref('/tweets').once('value').then(function(snapshot) {
+                    var data = (snapshot.val());
+                    if (data == null) {
+                      console.log("No data found at /tweets/" + userId);  
+                    } else {
+                        
+                      firebase.database().ref('/users').once('value').then(function(snapshot) { 
+                        var userdata = (snapshot.val());
+                        if (userdata != null) {
+                           dataarray = [data,userdata]
+                           console.log(dataarray)
+                           updatetweets(dataarray); 
+                        }
+                      });
+                      //console.log(data)
+                      //updatetweets(data);
+                    }
+                });
+                
+            } // end user null check
+        }); // end check auth state
+        
+        function encodeImageFileAsURL() {
+
+            var filesSelected = document.getElementById("inputFileToLoad").files;
+            if (filesSelected.length > 0) {
+                var fileToLoad = filesSelected[0];
+                var fileReader = new FileReader();
+                fileReader.onload = function(fileLoadedEvent) {
+                    var srcData = fileLoadedEvent.target.result; // <--- data: base64
+                    //var newImage = document.createElement('img');
+                    //newImage.src = srcData;
+                    //document.getElementById("imgTest").innerHTML = newImage.outerHTML;
+                    document.getElementById("imgTest").innerHTML = srcData;
+                    //console.log("Converted Base64 version is: " + document.getElementById("imgTest").innerHTML);
+                    console.log(srcData);
+                }
+                fileReader.readAsDataURL(fileToLoad);
+            }
+        } // end function
+        
+        // write user data
+        function writeUserData(userId, name, email, imageUrl) {
+            firebase.database().ref('users/' + userId).update({
+                username: name,
+                email: email,
+                profile_picture : imageUrl,
+                userId: userId
+            });
+            
+            firebase.database().ref('/users').once('value').then(function(snapshot) { 
+            var userdata = (snapshot.val());
+            dataarray = [userdata]
+                           
+            users = dataarray[0];
+                
+            for (var u in users) {
+                
+                if (users[u].username == name) {
+
+                        firebase.database().ref('users/' + users[u].userId + "/followers/1/").update({
+                            user: name,
+                            following: true
+                        });
+                }
+                    
+                }
+                            
+            });
+        }
+ 
+var followingAnyone = false;
+        
+function sleep(seconds) {
+   var currentTime = new Date().getTime();
+
+   while (currentTime + (seconds * 1000) >= new Date().getTime()) {
+   }
+}        
+        function checkU(uID) {
+            
+            var followingUser = false;
+            
+            return new Promise(function(resolve, reject) {
+            firebase.database().ref('/users/' + uID + '/followers').once('value').then(function(snapshot) { 
+                var userdata = (snapshot.val());
+                dataarray = [userdata];
+                //console.log(dataarray);
+                           
+                users2 = dataarray[0];
+                    
+                for (var x in users2) {
+                    if (users2[x].user == name && uID != userId && users2[x].following == true) {
+                        followingUser = true;
+                        followingAnyone = true;
+                    } else if (users2[x].user == name && users2[x].following == true) {
+                        followingUser = true;
+                    }
+                }
+                
+                resolve(followingUser);
+                
+            });
+                
+            });
+        }
+        
+        function deleteTweet(ref) {
+            if(confirm("Are you sure you want to delete this tweet? Hit OK to continue or cancel to stop.")) {
+                firebase.database().ref("tweets/" + userId + "/" + ref).remove();
+            }
+        }
+        
+        var oneIn = false;
+        var twoIn = false;
+        var tweetsOrder = [];
+        var usersOrder = [];
+        
+        async function updatetweets(datanew) {
+            
+            firebase.database().ref('/users').once('value').then(function(snapshot) {
+            var users = (snapshot.val());
+            
+            firebase.database().ref('/tweets').once('value').then(function(snapshot) {
+                    
+                var data = (snapshot.val());    
+                    
+                                    
+                        for (var u in data) {
+                        
+                            followingUser = false;
+                            
+                        var userID = users[u].userId;
+                            
+                        for (var u2 in users[u].followers) {
+                            if (users[u].followers[u2].user == name) {
+                                followingUser = true;
+                            }
+                        }
+                            
+                            
+                            if (followingUser) {
+                                                        
+                            for (var t in data[u]) {
+                                                            
+                            var tweetKey = data[u][t].key;
+                            var tweetTime = data[u][t].time;
+                            
+                            if (tweetsOrder.length == 0) {
+                                tweetsOrder[0] = tweetKey;
+                                usersOrder[0] = userID;
+                            } else if (tweetsOrder.length == 1) {
+                               
+                                var tweet1time = data[usersOrder[0]][tweetsOrder[0]].time;
+                                if (tweetTime > tweet1time) {
+                                    tweetsOrder.splice(0,0,tweetKey);
+                                    usersOrder.splice(0,0,userID);
+                                } else  {
+                                    tweetsOrder[1] = tweetKey;
+                                    usersOrder[1] = userID;
+                                } 
+                                
+                            } else {
+                                for (var i = 0; i < tweetsOrder.length; i++) {
+                                    if (i == 0) {
+                                        
+                                        if (tweetTime > data[usersOrder[0]][tweetsOrder[0]].time) {
+                                        tweetsOrder.splice(0,0,tweetKey);
+                                        usersOrder.splice(0,0,userID);
+                                        }
+                                        
+                                    } else if (i == tweetsOrder.length - 1) {
+                                        if (tweetTime < data[usersOrder[i-1]][tweetsOrder[i-1]].time) {
+                                        tweetsOrder[tweetsOrder.length] = tweetKey;
+                                        usersOrder[usersOrder.length] = userID;
+                                        }
+                                    } else if (tweetTime < data[usersOrder[i-1]][tweetsOrder[i-1]].time && tweetTime > data[usersOrder[i]][tweetsOrder[i]].time) {
+                                        tweetsOrder.splice(i,0,tweetKey);
+                                        usersOrder.splice(i,0,userID);
+                                    }
+                                }   
+                            
+                        }
+                        console.log(tweetsOrder);
+                                console.log(usersOrder);
+                    }
+                        }
+                    }
+                
+                    console.log(tweetsOrder);
+                
+                tweetsOrder.pop();
+                usersOrder.pop();
+                    
+                    updatetweets2(datanew);
+                    
+                
+            });
+            });
+                        
+        }
+        
+        async function updatetweets2(data) {
+            
+            var followingUser = false;
+            
+            var mytab = "<center><table id='mytable' width=" + tabWidth + ">";
+            users = data[1]; // put on top, because changed data - not good coding change later
+            data = data[0];
+            
+            while (tweetsOrder.length != 0) {
+            
+            for (var u in data) {
+                         
+                var isUser = false;
+                
+                var uID = users[u].userId;
+                
+                if (uID == userId) {
+                    isUser = true;
+                }
+                
+                followingUser = await checkU(uID);        
+                                                
+                if (followingUser) {
+                 
+                var tweetKeys = Object.keys(data[u]);
+                var tweetNum = 0;
+                    
+                for (var t in data[u]) {
+                    
+                    if (data[u][t].key == tweetsOrder[0]) {
+                        
+                    var tKey = "";
+                    tKey = data[u][t].key;
+                    
+                    var liked = false;
+                    var likeKey = "";
+                    var lz = 0;
+                    var likeKeys = [];
+                    var ly = 0;
+                    var likerList = [];
+                    var containtsLiker = false;
+                    
+                    //firebase.database().ref('tweets/' + uID + "/" + tKey + "/likers").remove();
+                        
+                    for (var l in data[u][t].likers) {
+                        if (data[u][t].likers[l].user == name) {
+                            containtsLiker = true;  
+                        }
+                    }
+                    
+                    if (!containtsLiker) {
+                        firebase.database().ref('tweets/' + uID + "/" + tKey + "/likers").push({
+                            user: name,
+                            liked: false
+                        });
+                        likeKeys = Object.keys(data[u][t].likers);
+                    } else {
+                        likeKeys = Object.keys(data[u][t].likers);
+                    }
+                        
+                    for (var l in data[u][t].likers) {
+                        if (data[u][t].likers[l].user == name && data[u][t].likers[l].liked == true) {
+                            liked = true;
+                            likeKey = likeKeys[lz];
+                            ly++;
+                        } else if (data[u][t].likers[l].user == name) {
+                            likeKey = likeKeys[lz];
+                        }
+                        lz++;
+                    }
+                    
+                    if (likeKey == "") {
+                        
+                        liked = false;
+                        likeKey = "";
+                        lz = 0;
+                        
+                    for (var l in data[u][t].likers) {
+                        if (data[u][t].likers[l].user == name && data[u][t].likers[l].liked == true) {
+                            liked = true;
+                            likeKey = likeKeys[lz];
+                        } else if (data[u][t].likers[l].user == name) {
+                            likeKey = likeKeys[lz];
+                        }
+                        lz++;
+                    }
+                        
+                    }
+                    
+                    ly = 0;
+                    likerList = [];
+                    
+                    for (var l in data[u][t].likers) {
+                        if (data[u][t].likers[l].liked == true) {
+                            ly++;
+                            likerList[likerList.length] = data[u][t].likers[l].user;
+                        }
+                    }
+                    
+                    var likes = ly;
+                    
+                    var date = new Date(data[u][t].time);
+                    var time = date.toString();
+                    if (time.substring(0,15) == loadDate.substring(0,15)) {
+                        if (time.substring(16,18) == loadDate.substring(16,18)) {
+                            var num1 = Number(loadDate.substring(19,21));
+                            var num2 = Number(time.substring(19,21));
+                            console.log(num1);
+                            var num3 = num1 - num2;
+                            time = num3.toString() + " minutes ago";
+                        } else {
+                            var num1 = Number(loadDate.substring(16,18));
+                            var num2 = Number(time.substring(16,18));
+                            var num3 = num1 - num2;
+                            if (num3 == 1) {
+                                var num1 = Number(loadDate.substring(19,21));
+                                var num2 = Number(time.substring(19,21));
+                                console.log(num1);
+                                var num3 = num1 - num2 + 60;
+                                if (num3 > 59) {
+                                    time = "1 hour ago"
+                                } else {
+                                    time = num3.toString() + " minutes ago";
+                                }
+                            } else {
+                                time = num3.toString() + " hours ago";
+                            }
+                        }
+                    } else {
+                        time = time.substring(4,15);
+                    }
+                    
+                    if (data[u][t].mood == "None" || data[u][t].mood == null) {
+                        mytab = mytab + "<tr>";
+                    } else if (data[u][t].mood == "Happy") {
+                            mytab = mytab + "<tr style='background-color: greenyellow'>";
+                        } else if (data[u][t].mood == "Angry") {
+                            mytab = mytab + "<tr style='background-color: indianred'>";
+                        } else if (data[u][t].mood == "Sad") {
+                            mytab = mytab + "<tr style='background-color: skyblue'>";
+                        } else if (data[u][t].mood == "Excited") {
+                            mytab = mytab + "<tr style='background-color: orange'>";
+                        } else {
+                            mytab = mytab + "<tr>";
+                        }
+                        
+                    var xtraString = "";
+                    
+                    if (data[u][t].img != null && data[u][t].img != "") {
+                        mytab = mytab + "<td width=22px>";
+                            mytab = mytab + "<button class='noC' onclick = 'like(`" + uID + "`, `" + tKey + "` , `" + likeKey + "`)'>";
+                        if (liked) {
+                            mytab = mytab + "<img width=20px src = 'heart2.png' id = '" + tKey + "'>";
+                        } else {
+                            mytab = mytab + "<img width=20px src = 'heart1.png'  id = '" + tKey + "'>";
+                        }
+                        mytab = mytab + "</button>";
+                        mytab = mytab + "<center><div id='" + likeKey + "'>" + "<button id = '" + tKey + "0' style='font-size: 15px' class='noC' onclick='alert(" + JSON.stringify(likerList) + ")'>" + likes + "</button>" + "</div></center></td>";
+                        if (profilePic) {
+                        if (users[u].profile_picture2 == null) {
+                            mytab = mytab + "<td><img class = 'zoom' src='" + users[u].profile_picture + "' width='70px'></td>";
+                        } else {
+                            mytab = mytab + "<td><img class = 'zoom' src='" + users[u].profile_picture2 + "' width='70px'></td>";
+                        }
+                        }
+                        mytab = mytab + "<td></td>";
+                        if (users[u].username2 == null) {
+                            mytab = mytab + "<td style='font-size: " + usernameFont + "px' width='" + uNameWidth + "'px> <center>" + users[u].username + "</center> </td>";
+                        } else {
+                            mytab = mytab + "<td style='font-size: " + usernameFont + "px' width='" + uNameWidth + "'px> <center>" + users[u].username2 + "</center> </td>";
+                        }
+                        mytab = mytab + "<td></td>";
+                        mytab = mytab + "<td> <img class = 'zoom' src='" + data[u][t].img + "' width='" + imgWidth + "'>" + "<center>" + data[u][t].tweet + "</center>"  + "</td>";
+                        mytab = mytab + "<td></td>";
+                        mytab = mytab + "<td width='" + timeWidth + "px' style='font-size: " + timeFont + "px'>" + time + "</td>";
+                        if (isUser && !isMobile) {
+                            mytab = mytab + "<td></td><td><button onclick = 'deleteTweet(`" + tKey + "`)'>X</button></td>";
+                        }
+                    } else if (data[u][t].vid != null && data[u][t].vid != "") {
+                        mytab = mytab + "<td width=22px>";
+                        mytab = mytab + "<button class='noC' onclick = 'like(`" + uID + "`, `" + tKey + "` , `" + likeKey + "`)'>";
+                        if (liked) {
+                            mytab = mytab + "<img width=20px src = 'heart2.png' id = '" + tKey + "'>";
+                        } else {
+                            mytab = mytab + "<img width=20px src = 'heart1.png'  id = '" + tKey + "'>";
+                        }
+                        mytab = mytab + "</button>";
+                        mytab = mytab + "<center><div id='" + likeKey + "'>" + "<button id = '" + tKey + "0' style='font-size: 15px' class='noC' onclick='alert(" + JSON.stringify(likerList) + ")'>" + likes + "</button>" + "</div></center></td>";
+                        if (profilePic) {
+                        if (users[u].profile_picture2 == null) {
+                            mytab = mytab + "<td><img class = 'zoom' src='" + users[u].profile_picture + "' width='70px'></td>";
+                        } else {
+                            mytab = mytab + "<td><img class = 'zoom' src='" + users[u].profile_picture2 + "' width='70px'></td>";
+                        }
+                        }
+                        mytab = mytab + "<td></td>";
+                        if (users[u].username2 == null) {
+                            mytab = mytab + "<td style='font-size: " + usernameFont + "px' width='" + uNameWidth + "'px> <center>" + users[u].username + "</center> </td>";
+                        } else {
+                            mytab = mytab + "<td style='font-size: " + usernameFont + "px' width='" + uNameWidth + "'px> <center>" + users[u].username2 + "</center> </td>";
+                        }
+                        mytab = mytab + "<td></td>";
+                        mytab = mytab + "<td width='1px'> <center> <iframe width='" + imgWidth + "' src='" + data[u][t].vid + "'frameborder='0' allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture' allowfullscreen></iframe> <br>" + data[u][t].tweet + "</center>"  + "</td>";
+                        mytab = mytab + "<td></td>";
+                        mytab = mytab + "<td width='" + timeWidth + "px' style='font-size: " + timeFont + "px'>" + time + "</td>";
+                        if (isUser && !isMobile) {
+                            mytab = mytab + "<td></td><td><button onclick = 'deleteTweet(`" + tKey + "`)'>X</button></td>";
+                        }
+                    } else {
+                        mytab = mytab + "<td width=22px>";
+                        mytab = mytab + "<button class='noC' onclick = 'like(`" + uID + "`, `" + tKey + "` , `" + likeKey + "`)'>";
+                        if (liked) {
+                            mytab = mytab + "<img width=20px src = 'heart2.png' id = '" + tKey + "'>";
+                        } else {
+                            mytab = mytab + "<img width=20px src = 'heart1.png'  id = '" + tKey + "'>";
+                        }
+                        mytab = mytab + "</button>";
+                        mytab = mytab + "<center><div id='" + likeKey + "'>" + "<button id = '" + tKey + "0' style='font-size: 15px' class='noC' onclick='alert(" + JSON.stringify(likerList) + ")'>" + likes + "</button>" + "</div></center></td>";
+                        if (profilePic) {
+                        if (users[u].profile_picture2 == null) {
+                            mytab = mytab + "<td><img class = 'zoom' src='" + users[u].profile_picture + "' width='70px'></td>";
+                        } else {
+                            mytab = mytab + "<td><img class = 'zoom' src='" + users[u].profile_picture2 + "' width='70px'></td>";
+                        }
+                        }
+                        mytab = mytab + "<td></td>";
+                        if (users[u].username2 == null) {
+                            mytab = mytab + "<td style='font-size: " + usernameFont + "px' width='" + uNameWidth + "'px> <center>" + users[u].username + "</center> </td>";
+                        } else {
+                            mytab = mytab + "<td style='font-size: " + usernameFont + "px' width='" + uNameWidth + "'px> <center>" + users[u].username2 + "</center> </td>";
+                        }
+                        mytab = mytab + "<td></td>";
+                        mytab = mytab + "<td width='1px'>" + data[u][t].tweet + "</td>";
+                        mytab = mytab + "<td></td>";
+                        mytab = mytab + "<td width='" + timeWidth + "px' style='font-size: " + timeFont + "px'>" + time + "</td>";
+                        if (isUser && !isMobile) {
+                            mytab = mytab + "<td></td><td><button onclick = 'deleteTweet(`" + tKey + "`)'>X</button></td>";
+                        }                  
+                    }
+                    mytab = mytab + "</tr>";
+                    tweetNum++;
+                    tweetsOrder = tweetsOrder.slice(1,tweetsOrder.length);
+                }
+                }
+            }
+            }
+            }
+                        
+            mytab = mytab + "</table> </center>";
+            var mytdiv = document.getElementById("mytweets");
+            //mytdiv.innerHTML = mylist;
+            mytdiv.innerHTML = mytab;
+            if (!followingAnyone) {
+                document.getElementById("notFollowing").innerHTML = "You're not following anyone; search for users to follow in the <b>search</b> tab. <br><br> <hr>";
+            }
+            
+            //mylist = mylist + "</ul>";
+            
+            oneIn = false;
+            twoIn = false;
+            
+        }
+        
+        function like(uID, tKey, likeKey) {
+                        
+            firebase.database().ref('tweets/' + uID + "/" + tKey + "/likers/" + likeKey).once('value').then(function(snapshot) { 
+                    var data = (snapshot.val());    
+                    if (data.liked == true) {
+                            firebase.database().ref('tweets/' + uID + "/" + tKey + "/likers/" + likeKey).update({
+                                liked: false
+                            });
+                        document.getElementById(tKey).src = "heart1.png";
+                        
+                        var likes = document.getElementById(tKey + "0");
+                        likesNum = Number(likes.innerHTML);
+                        likesNum--;
+                        likes.innerHTML = likesNum;
+                        
+                        } else {
+                            firebase.database().ref('tweets/' + uID + "/" + tKey + "/likers/" + likeKey).update({
+                                liked: true
+                            });
+                            document.getElementById(tKey).src = "heart2.png";
+                            
+                        var likes = document.getElementById(tKey + "0");
+                        likesNum = Number(likes.innerHTML);
+                        likesNum++;
+                        likes.innerHTML = likesNum;
+                        }
+                      });
+            
+        }
+        
+        var rows2 = [];
+        
+        function doNothing() {}
+        
+        // write tweets to firebase
+        function tweet() {
+                        
+            loadDate = new Date().toString();
+            var twitdoc = document.getElementById("twit");
+            var twitimg = document.getElementById("imgTest");
+            var twitvid = document.getElementById("vidFileID");
+            var nameValue = twitdoc.value;
+            var imgValue = twitimg.innerHTML;
+            var vidValue = twitvid.value;
+            var moodValue = document.getElementById("moodPick").value;
+            var js_time = Date.now();
+            
+            
+            if (nameValue.length > 140) {
+                alert("You cannot post more than 140 characters");
+            } else if (nameValue.length == 0 && imgValue == "" && vidValue == "") {
+                alert("You must post at least one of the following: text, image, video");
+            } else if (imgValue != "" && vidValue != "") {
+                alert("You can only post one of the following: image, video");
+            } else {
+            
+            var tweetid = firebase.database().ref('tweets/' + userId + "/").push({tweet: nameValue, time: js_time, img: imgValue, vid: vidValue, mood: moodValue});
+                
+            firebase.database().ref('/tweets').once('value').then(function(snapshot) {
+                    var data = (snapshot.val());
+                    var dataKeys = 0;
+                    var uKs = Object.keys(data);
+                    for (var u in data) {
+                        var tKeyC = 0;
+                        var tKs = Object.keys(data[u]);
+                        for (var t in data[u]) {
+                            firebase.database().ref('tweets/' + uKs[dataKeys] + "/" + tKs[tKeyC]).update({
+                                key: tKs[tKeyC]
+                            });
+                            firebase.database().ref('tweets/' + uKs[dataKeys] + "/" + tKs[tKeyC] + "/likers").push({
+                                user: name,
+                                liked: false
+                            });
+                            tKeyC++;
+                        }
+                        dataKeys++;
+                    }
+                    
+                });
+            
+            var neededKey = "";
+            firebase.database().ref('tweets/' + userId).once('value').then(function(snapshot) { 
+            var data = (snapshot.val()); 
+                var counter = -1;
+                var keysK = Object.keys(data);
+                for (var c in data) {
+                    counter++;
+                }
+                neededKey = keysK[counter];
+            });
+                
+            var date = new Date().toString();
+              today = date.substring(4,15);
+                
+            firebase.database().ref('shop/pointsUp/tweets/' + today).push({
+                user: name
+            });
+                
+            firebase.database().ref('shop/pointsUp/tweets/' + today).once('value').then(function(snapshot) {
+                    var data = (snapshot.val());
+                var uTcount = 0;
+                for (var u in data) {
+                    if (data[u].user == name) {
+                        uTcount++;
+                    }
+                }
+                if (uTcount == 1) {
+                    alert("You tweeted today, so we are rewarding you with 1 Imagine Point!");
+                    firebase.database().ref('/users/' + userId + "/rewards").once('value').then(function(snapshot) { 
+                        var data2 = (snapshot.val());
+                        var newPoints = Number(data2.points) + 1;
+                        firebase.database().ref('/users/' + userId + "/rewards").update({
+                            points: newPoints
+                        });
+                        newPoints = Number(data2.pointsTotal) + 1;
+                        firebase.database().ref('/users/' + userId + "/rewards").update({
+                            pointsTotal: newPoints
+                        });
+                        firebase.database().ref('/leaders/pointsTotal').once('value').then(function(snapshot) { 
+                var data = (snapshot.val());
+                var alltimehigh = data.points;
+                if (newPoints > alltimehigh) {
+                firebase.database().ref('/leaders/pointsTotal').update({
+                    points: newPoints,
+                    user: name
+                });
+                    alert("You are now the all time leader in Total Points Earned!");
+                }
+                });
+                    });
+                }
+            });
+            
+                
+            twitdoc.value = "";
+            console.log("tweet written")
+            
+            firebase.database().ref('/tweets').once('value').then(function(snapshot) {
+                    var data = (snapshot.val());
+                    if (data == null) {
+                      console.log("No data found at /tweets/" + userId);  
+                    } else { 
+                        firebase.database().ref('/users').once('value').then(function(snapshot) { 
+                        var userdata = (snapshot.val());
+                        if (userdata != null) {
+                           dataarray = [data,userdata]
+                           console.log(dataarray)
+                           updatetweets(dataarray); 
+                        }
+                      });
+                    }
+                });
+            
+            }
+            
+            // The unique key stored in tweetid is based on a timestamp, so list items will automatically be ordered chronologically. Because Firebase generates a unique key for each tweet, no write conflicts will occur if multiple users add a post at the same time. https://firebase.google.com/docs/database/admin/save-data
+            
+                
+        }
+        
+        function signin() {
+            console.log("Signing in");
+            var provider = new firebase.auth.GoogleAuthProvider();
+            firebase.auth().signInWithRedirect(provider).then(function(result) { 
+                window.location.replace("fbtest.html");
+            });
+        }
+        
+        function signout() {
+            console.log("Signing out");
+            firebase.auth().signOut().then(function() {
+            });
+        }
+        
+        function reLoad() {
+            
+            firebase.database().ref('/tweets').once('value').then(function(snapshot) {
+                    var data = (snapshot.val());
+                    if (data == null) {
+                      console.log("No data found at /tweets/" + userId);  
+                    } else {
+                        
+                      firebase.database().ref('/users').once('value').then(function(snapshot) { 
+                        var userdata = (snapshot.val());
+                        if (userdata != null) {
+                           dataarray = [data,userdata]
+                           console.log(dataarray)
+                           updatetweets(dataarray); 
+                        }
+                      });
+                      //console.log(data)
+                      //updatetweets(data);
+                    }
+                });
+            
+            document.getElementById("mytweets").innerHTML = "<center><div class='loader'></div> <br> <h3>Loading...</h3></center>";
+            
+        }
+    
+    </script>
+
+    <body>
+        
+        <div class="dropdown" style="float: right;">
+  <button class="dropbtn">Menu</button>
+  <div class="dropdown-content">
+    <a href="index.html">Home</a>
+      <a href="private.html">Messages</a>
+      <a href="search.html">Search</a>
+      <a href="polls.html">Polls</a>
+      <a href="rewards.html">Rewards</a>
+      <a href="profile.html">Profile</a>
+      <a href="about.html">About</a>
+    <a href="help.html">Help & FAQ</a>
+      <a href="games.html">Games</a>
+  </div>
+</div>
+        
+        <br>
+                      
+        <button id = "signin" onclick="signin()">Sign in</button>
+        <button id = "signout"onclick="signout()">Sign out</button>
+               
+        <br> <br>
+        
+        <form>
+            Tweet:<br>
+            <textarea id="twit" type="text" name="thetweet" cols="100" rows="4"></textarea>
+        </form> 
+        <button id = "submit" type="button" onclick="tweet()">Submit</button> <button id= "reload" onclick='reLoad()' style="float: right;">Reload posts</button>
+        
+        <br><br>
+        
+        Mood:
+        <br><select id="moodPick">
+            <option value="None" selected>None</option>
+            <option value="Happy">Happy</option>
+            <option value="Excited">Excited</option>
+            <option value="Angry">Angry</option>
+            <option value="Sad">Sad</option>
+        </select>
+    
+        <br><br>
+        
+        Image:
+        <br><input id="inputFileToLoad" type="file" accept=".jpg,.jpeg,.png" onchange="encodeImageFileAsURL();" />
+        <div id="imgTest" style="display:none;"></div>
+        
+        <br><br>
+        
+        Video:
+        <br><input id="vidFileID" type="text"/>
+        <div id="vidTest" style="display:none;"></div>
+        <br>
+        *Click share on a video, then embed, then copy & paste only the 'http...' part of the <b>embed code</b>*
+        
+    <br> <br> <hr> <br>
+        
+    <div id = "notFollowing"></div>
+    <div id = 'bigDiv' style = "height: 400px; width: 815px; overflow-y: scroll;">
+    <div id="mytweets">
+    <center><div class="loader"></div> <br>
+    <h3>Loading...</h3></center>
+    </div>
+    </div>
+        
+    <br> <hr> <br>
+        
+    <center><div id="mydata"></div>
+    <div id="myphoto"></div></center>
+        
+
+    </body>
+    
+    <script>
+    
+        if ( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+            document.getElementById("twit").cols = "39";
+            document.getElementById("bigDiv").style.width = "272px";
+        }
+    
+    </script>
+
+    
+</html>
